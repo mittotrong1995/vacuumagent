@@ -1,13 +1,21 @@
+import com.trolltech.qt.gui.QApplication;
+import com.trolltech.qt.gui.QPushButton;
 
-public class Dummy {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		System.out.println("Mi piacciono i treni!");
-		// TODO Ciuf ciuf
 
-	}
 
+
+public class Dummy
+{
+    public static void main(String args[])
+    {
+        QApplication.initialize(args);
+
+        QPushButton hello = new QPushButton("Mi Piacciono i treni");
+        hello.resize(120, 40);
+        hello.setWindowTitle("WRUUMMMMMM");
+        hello.show();
+
+        QApplication.exec();
+    }
 }
