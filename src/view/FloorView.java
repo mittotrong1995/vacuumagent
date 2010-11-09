@@ -26,6 +26,8 @@ public class FloorView extends QWidget{
 	int viewX,viewY;
 	QImage tileTexture;
 	boolean addingDust;
+	boolean leftButton = false;
+	boolean rightButton = false;
 	
 	public FloorView(Floor floor){
 		this.floor = floor;
@@ -54,30 +56,48 @@ public class FloorView extends QWidget{
 	}
 	
 	@Override
-	protected void mouseMoveEvent(QMouseEvent arg__1) {
+	protected void mouseMoveEvent(QMouseEvent mouseEvent) {
 		// TODO Auto-generated method stub
-		super.mouseMoveEvent(arg__1);
+		super.mouseMoveEvent(mouseEvent);
+		manageMouseEvent(mouseEvent);
 	}
 	
 	@Override
 	protected void mousePressEvent(QMouseEvent mouseEvent) {
 		// TODO Auto-generated method stub
 		super.mousePressEvent(mouseEvent);
+		if (mouseEvent.button()== Qt.MouseButton.LeftButton){leftButton = true;}
+		if (mouseEvent.button()== Qt.MouseButton.RightButton){rightButton = true;}
+		manageMouseEvent(mouseEvent);
 		
+	}
+	
+	@Override
+	protected void mouseReleaseEvent(QMouseEvent mouseEvent) {
+		// TODO Auto-generated method stub
+		super.mouseReleaseEvent(mouseEvent);
+		if (mouseEvent.button()== Qt.MouseButton.LeftButton){leftButton = false;}
+		if (mouseEvent.button()== Qt.MouseButton.RightButton){rightButton = false;}
+		manageMouseEvent(mouseEvent);
+		
+	}
+	
+	protected void manageMouseEvent(QMouseEvent mouseEvent)
+	{
 		int x = (mouseEvent.x() - viewX)/TILESIZE ;
 		int y = (mouseEvent.y() - viewY)/TILESIZE ;
+		
 		if(!addingDust){
-			if (mouseEvent.button()== Qt.MouseButton.LeftButton){floorController.addTile(x, y);}
-			if (mouseEvent.button()== Qt.MouseButton.RightButton){floorController.removeTile(x, y);}
+			if (leftButton){floorController.addTile(x, y);}
+			if (rightButton){floorController.removeTile(x, y);}
 		}
 		else
 		{
-			if (mouseEvent.button()== Qt.MouseButton.LeftButton){floorController.addDust(x, y);}
-			if (mouseEvent.button()== Qt.MouseButton.RightButton){floorController.removeDust(x, y);}
+			if (leftButton){floorController.addDust(x, y);}
+			if (rightButton){floorController.removeDust(x, y);}
 		}
 			
 		repaint();
-		
 	}
 
 	
