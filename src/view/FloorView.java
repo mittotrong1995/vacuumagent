@@ -5,7 +5,6 @@ import model.Floor;
 import com.trolltech.qt.core.QPoint;
 import com.trolltech.qt.core.QRect;
 import com.trolltech.qt.core.Qt;
-import com.trolltech.qt.gui.QBrush;
 import com.trolltech.qt.gui.QColor;
 import com.trolltech.qt.gui.QImage;
 import com.trolltech.qt.gui.QKeyEvent;
