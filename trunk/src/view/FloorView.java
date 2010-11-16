@@ -87,11 +87,15 @@ public class FloorView extends QWidget{
 	@Override
 	protected void wheelEvent(QWheelEvent event) {
 		// TODO Auto-generated method stub
-		super.wheelEvent(event);
+		super.wheelEvent(event);	
 		double delta = event.delta() * 0.001;
-		if(zoom + delta < 0.3){ zoom = 0.3; }
-		else if(zoom + delta > 10){ zoom = 10; }
 		zoom += delta;	
+		if(zoom + delta <= 0.3){ delta=0; zoom = 0.3;}
+		else if(zoom + delta >= 10){ delta=0; zoom = 10; }
+		
+		System.out.println(delta);
+		viewX -= delta*TILESIZE;
+		viewY -= delta*TILESIZE;
 		repaint();
 	}
 	
@@ -102,11 +106,7 @@ public class FloorView extends QWidget{
 		
 		if(mouseEvent.x() - viewX < 0){x--;}
 		if(mouseEvent.y() - viewY < 0){y--;}
-		
-		System.out.println((mouseEvent.x() - viewX )+ " " + (mouseEvent.y() - viewY));
-		
-		
-		
+				
 		if(!addingDust){
 			if (leftButton){floorController.addTile(x, y);}
 			if (rightButton){floorController.removeTile(x, y);}
@@ -131,8 +131,6 @@ public class FloorView extends QWidget{
         for (QPoint p: floor.getTiles().keySet()) {
         	int x = p.x() * TILESIZE;
         	int y = p.y() * TILESIZE;
-  
-        	
         	QRect rect = new QRect(new QPoint(x, y),new QPoint(x+TILESIZE, y+TILESIZE));
 			painter.drawImage(rect, tileTexture);
 			painter.fillRect(rect,new QColor(0, 0, 0,(int)floor.getTile(p).getDust()));
