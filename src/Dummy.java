@@ -16,6 +16,7 @@ public class Dummy {
 		// hello.show();
 
 		Floor vomito = new Floor();
+		
 
 		//TODO RANDOM
 		
