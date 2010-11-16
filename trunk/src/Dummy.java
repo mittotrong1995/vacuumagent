@@ -20,8 +20,8 @@ public class Dummy {
 		//TODO RANDOM
 		
 
-		FloorView cesaremaria = new FloorView(vomito);
-		cesaremaria.show();
+		FloorView pornoStarRoberto = new FloorView(vomito);
+		pornoStarRoberto.show();
 
 		QApplication.exec();
 	}
