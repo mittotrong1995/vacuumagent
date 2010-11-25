@@ -3,6 +3,7 @@ import view.FloorView;
 import model.Floor;
 import model.Tile;
 
+import com.sun.org.apache.regexp.internal.recompile;
 import com.trolltech.qt.core.QPoint;
 import com.trolltech.qt.gui.QApplication;
 
@@ -26,4 +27,7 @@ public class Dummy {
 
 		QApplication.exec();
 	}
+	
+	
+	
 }
