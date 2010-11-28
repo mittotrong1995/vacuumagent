@@ -14,7 +14,7 @@ public class VAFloor {
 //	private int size;
 
 	/** The floor. */
-	VATile floor[][];
+	protected VATile floor[][];
 
 	/**
 	 * Instantiates a new vA floor.

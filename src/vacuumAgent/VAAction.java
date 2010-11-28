@@ -7,17 +7,13 @@ import framework.Action;
  * The Class VAAction.
  */
 public class VAAction implements Action {
-	
+
 	/**
 	 * The Enum VAActionType.
 	 */
 	public enum VAActionType {
-		
-		SUCK, 
- MOVENORTH, 
- MOVESOUTH, 
- MOVEWEST, 
- MOVEEAST
+
+		SUCK, MOVENORTH, MOVESOUTH, MOVEWEST, MOVEEAST
 	}
 
 	/** The action type. */
@@ -25,8 +21,9 @@ public class VAAction implements Action {
 
 	/**
 	 * Instantiates a new vA action.
-	 *
-	 * @param actionType the action type
+	 * 
+	 * @param actionType
+	 *            the action type
 	 */
 	public VAAction(VAActionType actionType) {
 		super();
@@ -35,7 +32,7 @@ public class VAAction implements Action {
 
 	/**
 	 * Gets the action type.
-	 *
+	 * 
 	 * @return the action type
 	 */
 	public VAActionType getActionType() {
@@ -44,14 +41,17 @@ public class VAAction implements Action {
 
 	/**
 	 * Sets the action type.
-	 *
-	 * @param actionType the new action type
+	 * 
+	 * @param actionType
+	 *            the new action type
 	 */
 	public void setActionType(VAActionType actionType) {
 		this.actionType = actionType;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see framework.Action#isNoOp()
 	 */
 	@Override
