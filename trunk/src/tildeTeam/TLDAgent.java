@@ -43,6 +43,18 @@ public class TLDAgent extends VAAgent {
 	 */
 	@Override
 	public Action execute(Percept percept) {		// creare la lista con il path
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return observableCase(percept);
+
+	}
+	
+	private Action observableCase(Percept percept){
+		
 		VAPercept vap = (VAPercept) percept;
 		Point currPoint = vap.getVacuumAgentPosition();
 
