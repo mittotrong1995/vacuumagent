@@ -11,16 +11,33 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class TLDPathFinder.
+ */
 public class TLDPathFinder {
 
+	/** The graph. */
 	SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graph;
 
+	/**
+	 * Instantiates a new tLD path finder.
+	 *
+	 * @param graph the graph
+	 */
 	public TLDPathFinder(
 			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graph) {
 		super();
 		this.graph = graph;
 	}
 
+	/**
+	 * Find path.
+	 *
+	 * @param start the start
+	 * @param nodes the dirty tiles
+	 * @return the array list
+	 */
 	public ArrayList<Point> findPath(Point start, ArrayList<Point> nodes) {
 		SimpleWeightedGraph<Point, DefaultWeightedEdge> unDirGraph = toUnDirGraph(this.graph);
 		this.transitiveClosure(unDirGraph);
@@ -55,6 +72,12 @@ public class TLDPathFinder {
 
 	}
 
+	/**
+	 * Builds the path.
+	 *
+	 * @param nodes the nodes
+	 * @return the array list
+	 */
 	private ArrayList<Point> buildPath(ArrayList<Point> nodes) {
 		ArrayList<Point> finalPath = new ArrayList<Point>();
 		for (int i = 0; i < nodes.size() - 1; i++) {
@@ -77,6 +100,12 @@ public class TLDPathFinder {
 		return finalPath;
 	}
 
+	/**
+	 * To un dir graph.
+	 *
+	 * @param in the in
+	 * @return the simple weighted graph
+	 */
 	private SimpleWeightedGraph<Point, DefaultWeightedEdge> toUnDirGraph(
 			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> in) {
 		SimpleWeightedGraph<Point, DefaultWeightedEdge> out = new SimpleWeightedGraph<Point, DefaultWeightedEdge>(
@@ -93,6 +122,11 @@ public class TLDPathFinder {
 		return out;
 	}
 
+	/**
+	 * Transitive closure.
+	 *
+	 * @param toClose the to close
+	 */
 	private void transitiveClosure(
 			SimpleWeightedGraph<Point, DefaultWeightedEdge> toClose) {
 

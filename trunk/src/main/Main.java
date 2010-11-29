@@ -8,6 +8,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import tildeTeam.TLDAgent;
 import util.constants.Constants;
 import vacuumAgent.VAAction;
 import vacuumAgent.VAAgent;
@@ -146,56 +147,57 @@ public class Main extends JFrame{
 	 */
 	public static void main( String[] args ) {
 		Point point = new Point( 0, 0 );
-		VAAgent a = new VAAgent(10) {
-			@Override
-			public Action execute(Percept percept) {
-				// TODO Auto-generated method stub
-				VAPercept p = (VAPercept) percept;
-				VATileStatus status = p.getCurrentTileStatus();
-				
-				VAAction a = new VAAction(VAActionType.SUCK);
-				if( status == VATileStatus.DIRTY )
-				{					
-					a = new VAAction(VAActionType.SUCK);
-				}
-				else
-				{
-					Random r = new Random();
-					int i = r.nextInt(4);
-					
-					switch( i )
-					{
-						case 0:						
-							if( p.getNeighborhood().eastIsFree() )
-							{
-								a = new VAAction(VAActionType.MOVEEAST);
-							}
-							break;
-						case 1:
-							if( p.getNeighborhood().northIsFree() )
-							{
-								a = new VAAction(VAActionType.MOVENORTH);
-							}
-							break;
-						case 2:
-							if( p.getNeighborhood().southIsFree())
-							{
-								a = new VAAction(VAActionType.MOVESOUTH);
-							}
-							break;
-						case 3:
-							if( p.getNeighborhood().westIsFree())
-							{
-								a = new VAAction(VAActionType.MOVEWEST);
-							}
-							break;
-						default:
-							break;
-					}
-				}				
-				return a;
-			}
-		};
+		VAAgent a = new TLDAgent(100);
+//		VAAgent a = new VAAgent(10) {
+//			@Override
+//			public Action execute(Percept percept) {
+//				// TODO Auto-generated method stub
+//				VAPercept p = (VAPercept) percept;
+//				VATileStatus status = p.getCurrentTileStatus();
+//				
+//				VAAction a = new VAAction(VAActionType.SUCK);
+//				if( status == VATileStatus.DIRTY )
+//				{					
+//					a = new VAAction(VAActionType.SUCK);
+//				}
+//				else
+//				{
+//					Random r = new Random();
+//					int i = r.nextInt(4);
+//					
+//					switch( i )
+//					{
+//						case 0:						
+//							if( p.getNeighborhood().eastIsFree() )
+//							{
+//								a = new VAAction(VAActionType.MOVEEAST);
+//							}
+//							break;
+//						case 1:
+//							if( p.getNeighborhood().northIsFree() )
+//							{
+//								a = new VAAction(VAActionType.MOVENORTH);
+//							}
+//							break;
+//						case 2:
+//							if( p.getNeighborhood().southIsFree())
+//							{
+//								a = new VAAction(VAActionType.MOVESOUTH);
+//							}
+//							break;
+//						case 3:
+//							if( p.getNeighborhood().westIsFree())
+//							{
+//								a = new VAAction(VAActionType.MOVEWEST);
+//							}
+//							break;
+//						default:
+//							break;
+//					}
+//				}				
+//				return a;
+//			}
+//		};
 				
 		VAEnvObservable state = new VAEnvObservable( a, point, null );
 		
