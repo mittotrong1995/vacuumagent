@@ -90,10 +90,17 @@ public class MapGenerator {
 	}
 
 
+	/**
+	 * Generate a floor using a progressive algorithm, that chooses randomly a start point and at
+	 * each step a cell that is adjacent to the current cell. In this way is also ensured that
+	 * there won't be unreachable areas.
+	 * @param matrix
+	 * @param blocks the number of blocks to set
+	 */
 	private static void progressiveGenerator(int[][] matrix, int blocks) {
 
 		int free = (matrix.length * matrix.length - blocks);
-		System.out.println("blocks: " + blocks + "\tfree: " + free);
+//		System.out.println("blocks: " + blocks + "\tfree: " + free);
 
 		// initialize the matrix at 1 (all cells are a block)
 		for (int i = 0; i < matrix.length; i++) {
@@ -205,6 +212,13 @@ public class MapGenerator {
 		return null;
 	}
 
+	/**
+	 * This method generates a matrix in which at each cell is assigned a status (free or block)
+	 * basing on the launch of a non impartial coin, in the respect of the passed value of 
+	 * block percentage. 
+	 * @param matrix
+	 * @param percentage the percentage of blocks in the matrix
+	 */
 	private static void coinCreation(int[][] matrix, float percentage) {
 		float coin;
 		int cont = 0;
@@ -218,10 +232,16 @@ public class MapGenerator {
 					matrix[i][j] = 0;
 			}
 		}
-		System.out.println("settate " + cont + " celle come occupate.");
+//		System.out.println("settate " + cont + " celle come occupate.");
 
 	}
 
+	/**
+	 * This method generates a matrix choosing randomly at each step a line and a column,
+	 * and assigning to it a status (that can be free or block).
+	 * @param matrix
+	 * @param blocks the number of blocks that have to be present in the matrix
+	 */
 	private static void fullRandom(int[][] matrix, int blocks) {
 		int setted = 0;
 		int exp = ((int) Math.log10(matrix.length)) + 1;
@@ -257,6 +277,13 @@ public class MapGenerator {
 
 	}
 
+	/**
+	 * This method assigns at each free cell of the passed matrix a status (free or dirty)
+	 * basing on the launch of a non impartial coin, in the respect of the passed value of 
+	 * dirty percentage. 
+	 * @param matrix
+	 * @param percentage the percentage of dirty cells in the matrix
+	 */
 	private static void dirtyCreation(int[][] matrix, float percentage) {
 		float coin;
 		int cont = 0;
@@ -272,7 +299,7 @@ public class MapGenerator {
 				}
 
 		}
-		System.out.println("settate " + cont + " celle come sporche.");
+//		System.out.println("settate " + cont + " celle come sporche.");
 	}
 
 	/**
@@ -372,25 +399,25 @@ public class MapGenerator {
 			couples.remove(couples.size() - 1);
 		}
 
-		for (int i = 0; i < matrixTmp.length; i++) {
-			for (int j = 0; j < matrixTmp.length; j++) {
-				switch (matrixTmp[i][j]) {
-				case -1:
-					System.out.print("B  ");
-					break;
-				default:
-					System.err.print(matrixTmp[i][j]);
-					if(matrixTmp[i][j] < 10)
-						System.err.print("  ");
-					else
-						System.err.print(" ");
-					break;
-				}
-			}
-			System.out.println();
-		}
-
-		System.out.println("finito di stampare");
+//		for (int i = 0; i < matrixTmp.length; i++) {
+//			for (int j = 0; j < matrixTmp.length; j++) {
+//				switch (matrixTmp[i][j]) {
+//				case -1:
+//					System.out.print("B  ");
+//					break;
+//				default:
+//					System.err.print(matrixTmp[i][j]);
+//					if(matrixTmp[i][j] < 10)
+//						System.err.print("  ");
+//					else
+//						System.err.print(" ");
+//					break;
+//				}
+//			}
+//			System.out.println();
+//		}
+//
+//		System.out.println("finito di stampare");
 
 		int iMin, iMax, jMin, jMax, iStart, jEnd;
 		for (int k = 1; k < blocchi.length; k++) {

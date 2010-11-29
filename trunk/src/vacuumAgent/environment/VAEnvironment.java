@@ -2,7 +2,6 @@ package vacuumAgent.environment;
 
 import java.awt.Point;
 
-import sun.management.resources.agent;
 import vacuumAgent.VAAction;
 import vacuumAgent.VAAgent;
 import vacuumAgent.VAFloor;
@@ -114,6 +113,11 @@ public abstract class VAEnvironment implements Environment {
 	 */
 	@Override
 	public void step() throws VAIllegalMove {
+		
+		if(isDone()){
+			return;
+		}
+		
 		VAPercept percept = this.genPerception();
 		VAAction action = (VAAction) vacuumAgent.execute(percept);
 		VANeighborhood neighborhood = this.getNeighborhood(vacuumAgentPosition);
