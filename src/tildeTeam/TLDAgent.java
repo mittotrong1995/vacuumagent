@@ -2,6 +2,8 @@ package tildeTeam;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
@@ -11,6 +13,7 @@ import framework.Percept;
 import vacuumAgent.VAAction;
 import vacuumAgent.VAAction.VAActionType;
 import vacuumAgent.VAAgent;
+import vacuumAgent.VANeighborhood;
 import vacuumAgent.VAPercept;
 import vacuumAgent.VATile.VATileStatus;
 
@@ -25,7 +28,10 @@ public class TLDAgent extends VAAgent {
 	
 	/** The path. */
 	ArrayList<Point> path;
-
+	
+	/**The visited. */
+	ArrayList<Point> visited;
+	
 	/**
 	 * Instantiates a new tLD agent.
 	 *
@@ -49,26 +55,27 @@ public class TLDAgent extends VAAgent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return observableCase(percept);
+		VAPercept vap = (VAPercept) percept;
+		return nonObservableCase(vap);
 
 	}
 	
-	private Action observableCase(Percept percept){
+	private Action observableCase(VAPercept percept){
 		
-		VAPercept vap = (VAPercept) percept;
-		Point currPoint = vap.getVacuumAgentPosition();
+		
+		Point currPoint = percept.getVacuumAgentPosition();
 
 		if (this.firtsStep) {
-			int n = vap.getFloor().getSize();
+			int n = percept.getFloor().getSize();
 			ArrayList<Point> dirtyNodes = new ArrayList<Point>();
 
 			for (int i = 0; i < n; i++) {
 				for (int j = 0; j < n; j++) {
-					if (vap.getFloor().getTile(new Point(i, j)).getStatus() == VATileStatus.DIRTY)
+					if (percept.getFloor().getTile(new Point(i, j)).getStatus() == VATileStatus.DIRTY)
 						dirtyNodes.add(new Point(i, j));// dirtyNodes
 				}
 			}
-			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorDir = TLDConvertToGraph.toGraph(vap.getFloor());
+			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorDir = TLDConvertToGraph.toGraph(percept.getFloor());
 
 			TLDPathFinder pathFinder = new TLDPathFinder(floorDir);
 
@@ -78,7 +85,7 @@ public class TLDAgent extends VAAgent {
 			
 		} // not 1° step
 
-		if (vap.getCurrentTileStatus() == VATileStatus.DIRTY)	return new VAAction(VAActionType.SUCK);
+		if (percept.getCurrentTileStatus() == VATileStatus.DIRTY)	return new VAAction(VAActionType.SUCK);
 		int cx, cy, nx, ny;
 
 		cx = currPoint.x;		cy = currPoint.y;
@@ -105,6 +112,97 @@ public class TLDAgent extends VAAgent {
 			return new VAAction(VAActionType.MOVEWEST);
 		}
 		return null;
+	}
+	
+	private Action semiObservableCase(Percept percept){
+		
+		return null;		
+	}
+	
+	private Action nonObservableCase(VAPercept percept){
+		if(firtsStep){
+			path = new ArrayList<Point>();
+			visited = new ArrayList<Point>();
+			path.add(new Point(0,0));
+			visited.add(new Point(0,0));
+			firtsStep = false;
+		}
+		
+		if (percept.getCurrentTileStatus() == VATileStatus.DIRTY)	return new VAAction(VAActionType.SUCK);
+		
+		VANeighborhood neighborhood = percept.getNeighborhood();
+		
+		
+		Point currentPosition = path.get(path.size()-1);
+		
+//		System.out.println("curr "+currentPosition);
+		
+		ArrayList<Point> freeStage = new ArrayList<Point>();
+		
+		if(neighborhood.northIsFree()){
+			Point point = new Point(currentPosition.x+1, currentPosition.y);
+			if(!visited.contains(point))
+				freeStage.add(point);
+		}
+		
+		if(neighborhood.southIsFree()){
+			Point point = new Point(currentPosition.x-1, currentPosition.y);
+			if(!visited.contains(point))
+				freeStage.add(point);
+		}
+		
+		if(neighborhood.eastIsFree()){
+			Point point = new Point(currentPosition.x, currentPosition.y+1);
+			if(!visited.contains(point))
+				freeStage.add(point);
+		}
+		
+		if(neighborhood.westIsFree()){
+			Point point = new Point(currentPosition.x, currentPosition.y-1);
+			if(!visited.contains(point))
+				freeStage.add(point);
+		}
+		
+//		for(Point p : freeStage)
+//			System.out.println("freeee "+p);
+		
+		Point nextPoint;
+		
+		if(freeStage.isEmpty()){
+			if(currentPosition.x == 0 && currentPosition.y == 0){
+				this.die();
+				return new VAAction(VAActionType.SUCK);
+			}
+			path.remove(path.size()-1);
+			nextPoint = path.get(path.size()-1);
+		}
+		else{
+			nextPoint = freeStage.get(0);
+			path.add(nextPoint);
+			visited.add(nextPoint);
+		}
+		
+//		System.out.println("nextpoint: "+nextPoint.toString());
+//		
+//
+//		System.out.println("--------------------------------------------");
+//		System.out.println("--------------------------------------------");
+		
+		int cy = currentPosition.y, cx = currentPosition.x, nx = nextPoint.x, ny = nextPoint.y;
+		
+		if (cy == ny && cx + 1 == nx) {
+			return new VAAction(VAActionType.MOVENORTH);
+		}// north e south sono invertiti
+		if (cy == ny && cx - 1 == nx) {
+			return new VAAction(VAActionType.MOVESOUTH);
+		}// north e south sono invertiti
+		if (cy+1 == ny && cx == nx) {
+			return new VAAction(VAActionType.MOVEEAST);
+		}// north e south sono invertiti
+		if (cy -1 == ny  && cx == nx) {
+			return new VAAction(VAActionType.MOVEWEST);
+		}
+		return null;		
 	}
 
 }
