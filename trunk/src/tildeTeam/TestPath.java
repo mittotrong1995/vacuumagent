@@ -9,6 +9,7 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.alg.HamiltonianCycle;
 import org.jgrapht.alg.TransitiveClosure;
+import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
@@ -29,7 +30,7 @@ public class TestPath {
 	 */
 	public static void main(String[] args) {
 		
-		testJgraphT();
+		testJgraphT2();
 	}
 	
 	public void testAstar(){
@@ -52,117 +53,174 @@ public class TestPath {
 		}
 	}
 	
+	public static void testJgraphT2(){
+        SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorDir = new SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		
+		floorDir.addVertex(new Point(1, 1));
+		floorDir.addVertex(new Point(1, 2));
+		floorDir.addVertex(new Point(1, 3));
+		floorDir.addVertex(new Point(1, 5));
+		floorDir.addVertex(new Point(2, 1));
+		floorDir.addVertex(new Point(2, 2));
+		floorDir.addVertex(new Point(2, 3));
+		floorDir.addVertex(new Point(2, 5));
+		floorDir.addVertex(new Point(3, 1));
+		floorDir.addVertex(new Point(3, 3));
+		floorDir.addVertex(new Point(3, 5));
+		floorDir.addVertex(new Point(4, 2));
+		floorDir.addVertex(new Point(4, 3));
+		floorDir.addVertex(new Point(4, 5));
+		floorDir.addVertex(new Point(5, 1));
+		floorDir.addVertex(new Point(5, 2));
+		floorDir.addVertex(new Point(5, 3));
+		floorDir.addVertex(new Point(5, 4));
+		floorDir.addVertex(new Point(5, 5));
+		
+		for(Point p: floorDir.vertexSet()){
+			
+		    int x = p.x;
+		    int y = p.y;
+			if (floorDir.containsVertex(new Point(x+1, y))){
+				floorDir.addEdge(p,new Point(x+1, y));
+				floorDir.setEdgeWeight(floorDir.getEdge(p,new Point(x+1, y)), 1);
+			}
+			if (floorDir.containsVertex(new Point(x-1, y))){
+				floorDir.addEdge(p,new Point(x-1, y));
+				floorDir.setEdgeWeight(floorDir.getEdge(p,new Point(x-1, y)), 1);
+			}
+			if (floorDir.containsVertex(new Point(x, y+1))){
+				floorDir.addEdge(p,new Point(x, y+1));
+				floorDir.setEdgeWeight(floorDir.getEdge(p,new Point(x, y+1)), 1);
+			}
+			if (floorDir.containsVertex(new Point(x, y-1))){
+				floorDir.addEdge(p,new Point(x, y-1));
+				floorDir.setEdgeWeight(floorDir.getEdge(p,new Point(x, y-1)), 1);
+			}
+			
+			
+		}
+		
+		
+		TLDPathFinder pathFinder = new TLDPathFinder(floorDir);
+		
+		
+		ArrayList<Point> nodes = new ArrayList<Point>();
+		nodes.add(new Point(3,1));
+		nodes.add(new Point(3,3));
+		nodes.add(new Point(5,3));
+		nodes.add(new Point(2,5));
+		nodes.add(new Point(1,1));
+		ArrayList<Point> finalPath = pathFinder.findPath(new Point(5,1), nodes);
+		
+        System.out.println("FINAL PATHHHH");
+        for(Point p: finalPath){
+        	System.out.println(p);
+        }
+		
+		
+		
+	}
+	
+	
 	public static void testJgraphT(){
-		SimpleWeightedGraph<Point, DefaultWeightedEdge> floor = new SimpleWeightedGraph<Point, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		SimpleWeightedGraph<Point, DefaultWeightedEdge> floorUndir = new SimpleWeightedGraph<Point, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		
-		floor.addVertex(new Point(0, 0));
-		floor.addVertex(new Point(0, 1));
-		//floor.addVertex(new Point(0, 2));
-		floor.addVertex(new Point(1, 0));
-		floor.addVertex(new Point(1, 2));
-		floor.addVertex(new Point(2, 0));
-		floor.addVertex(new Point(2, 1));
-		floor.addVertex(new Point(2, 2));
+
+		floorUndir.addVertex(new Point(1, 1));
+		floorUndir.addVertex(new Point(1, 2));
+		floorUndir.addVertex(new Point(1, 3));
+		floorUndir.addVertex(new Point(1, 5));
+		floorUndir.addVertex(new Point(2, 1));
+		floorUndir.addVertex(new Point(2, 2));
+		floorUndir.addVertex(new Point(2, 3));
+		floorUndir.addVertex(new Point(2, 5));
+		floorUndir.addVertex(new Point(3, 1));
+		floorUndir.addVertex(new Point(3, 3));
+		floorUndir.addVertex(new Point(3, 5));
+		floorUndir.addVertex(new Point(4, 2));
+		floorUndir.addVertex(new Point(4, 3));
+		floorUndir.addVertex(new Point(4, 5));
+		floorUndir.addVertex(new Point(5, 1));
+		floorUndir.addVertex(new Point(5, 2));
+		floorUndir.addVertex(new Point(5, 3));
+		floorUndir.addVertex(new Point(5, 4));
+		floorUndir.addVertex(new Point(5, 5));
+
 		
-		for(Point p: floor.vertexSet()){
+		
+		for(Point p: floorUndir.vertexSet()){
 			
 		    int x = p.x;
 		    int y = p.y;
-			if (floor.containsVertex(new Point(x+1, y))){
-				floor.addEdge(p,new Point(x+1, y));
-				floor.setEdgeWeight(floor.getEdge(p,new Point(x+1, y)), 1);
+			if (floorUndir.containsVertex(new Point(x+1, y))){
+				floorUndir.addEdge(p,new Point(x+1, y));
+				floorUndir.setEdgeWeight(floorUndir.getEdge(p,new Point(x+1, y)), 1);
 			}
-			if (floor.containsVertex(new Point(x-1, y))){
-				floor.addEdge(p,new Point(x-1, y));
-				floor.setEdgeWeight(floor.getEdge(p,new Point(x-1, y)), 1);
+			if (floorUndir.containsVertex(new Point(x-1, y))){
+				floorUndir.addEdge(p,new Point(x-1, y));
+				floorUndir.setEdgeWeight(floorUndir.getEdge(p,new Point(x-1, y)), 1);
 			}
-			if (floor.containsVertex(new Point(x, y+1))){
-				floor.addEdge(p,new Point(x, y+1));
-				floor.setEdgeWeight(floor.getEdge(p,new Point(x, y+1)), 1);
+			if (floorUndir.containsVertex(new Point(x, y+1))){
+				floorUndir.addEdge(p,new Point(x, y+1));
+				floorUndir.setEdgeWeight(floorUndir.getEdge(p,new Point(x, y+1)), 1);
 			}
-			if (floor.containsVertex(new Point(x, y-1))){
-				floor.addEdge(p,new Point(x, y-1));
-				floor.setEdgeWeight(floor.getEdge(p,new Point(x, y-1)), 1);
+			if (floorUndir.containsVertex(new Point(x, y-1))){
+				floorUndir.addEdge(p,new Point(x, y-1));
+				floorUndir.setEdgeWeight(floorUndir.getEdge(p,new Point(x, y-1)), 1);
 			}
 			
 			
 		}
 		
-		SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorBack = new SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		
-		floorBack.addVertex(new Point(0, 0));
-		floorBack.addVertex(new Point(0, 1));
-		//floorBack.addVertex(new Point(0, 2));
-		floorBack.addVertex(new Point(1, 0));
-		floorBack.addVertex(new Point(1, 2));
-		floorBack.addVertex(new Point(2, 0));
-		floorBack.addVertex(new Point(2, 1));
-		floorBack.addVertex(new Point(2, 2));
-		
-		for(Point p: floorBack.vertexSet()){
-			
-		    int x = p.x;
-		    int y = p.y;
-			if (floorBack.containsVertex(new Point(x+1, y))){
-				floorBack.addEdge(p,new Point(x+1, y));
-				floorBack.setEdgeWeight(floorBack.getEdge(p,new Point(x+1, y)), 1);
-			}
-			if (floorBack.containsVertex(new Point(x-1, y))){
-				floorBack.addEdge(p,new Point(x-1, y));
-				floorBack.setEdgeWeight(floorBack.getEdge(p,new Point(x-1, y)), 1);
-			}
-			if (floorBack.containsVertex(new Point(x, y+1))){
-				floorBack.addEdge(p,new Point(x, y+1));
-				floorBack.setEdgeWeight(floorBack.getEdge(p,new Point(x, y+1)), 1);
-			}
-			if (floorBack.containsVertex(new Point(x, y-1))){
-				floorBack.addEdge(p,new Point(x, y-1));
-				floorBack.setEdgeWeight(floorBack.getEdge(p,new Point(x, y-1)), 1);
-			}
-			
-			
-		}
-		
-		for(Point p1: floor.vertexSet()){
-			for(Point p2: floor.vertexSet()){
+		for(Point p1: floorUndir.vertexSet()){
+			for(Point p2: floorUndir.vertexSet()){
 				if(p1 != p2){
-					DijkstraShortestPath<Point, DefaultWeightedEdge> pathfinder = new DijkstraShortestPath<Point, DefaultWeightedEdge>(floor, p1, p2);
+					DijkstraShortestPath<Point, DefaultWeightedEdge> pathfinder = new DijkstraShortestPath<Point, DefaultWeightedEdge>(floorUndir, p1, p2);
 					GraphPath<Point, DefaultWeightedEdge> path = pathfinder.getPath();
-					floor.addEdge(p1,p2);
-					floor.setEdgeWeight(floor.getEdge(p1,p2), path.getWeight());
+					floorUndir.addEdge(p1,p2);
+					floorUndir.setEdgeWeight(floorUndir.getEdge(p1,p2), path.getWeight());
 				}
 			}
 		}
 		
-		floor.removeVertex(new Point(0, 1));
-		//floor.removeVertex(new Point(0, 2));
-		floor.removeVertex(new Point(1, 0));
-		floor.removeVertex(new Point(2, 0));
-		floor.removeVertex(new Point(2, 1));
-		//floor.removeVertex(new Point(1, 2));
+		
+		floorUndir.removeVertex(new Point(1, 2));
+		floorUndir.removeVertex(new Point(1, 5));
+		floorUndir.removeVertex(new Point(2, 1));
+		floorUndir.removeVertex(new Point(2, 2));
+		floorUndir.removeVertex(new Point(2, 3));
+		floorUndir.removeVertex(new Point(3, 5));
+		floorUndir.removeVertex(new Point(4, 2));
+		floorUndir.removeVertex(new Point(4, 3));
+		floorUndir.removeVertex(new Point(4, 5));
+		floorUndir.removeVertex(new Point(5, 2));
+		floorUndir.removeVertex(new Point(5, 3));
+		floorUndir.removeVertex(new Point(5, 4));
+		floorUndir.removeVertex(new Point(5, 5));
 		
 		
 		
         DepthFirstIterator<Point, DefaultWeightedEdge> iter =
-            new DepthFirstIterator<Point,DefaultWeightedEdge>(floor);
+            new DepthFirstIterator<Point,DefaultWeightedEdge>(floorUndir);
         Point vertex;
         while (iter.hasNext()) {
             vertex = iter.next();
             System.out.println(
                 "Vertex " + vertex.toString() + " is connected to: "
-                + floor.edgesOf(vertex).toString());
+                + floorUndir.edgesOf(vertex).toString());
         }
         
 
 		
-        for(Point p: HamiltonianCycle.getApproximateOptimalForCompleteGraph(floor)){
+        for(Point p: HamiltonianCycle.getApproximateOptimalForCompleteGraph(floorUndir)){
         	System.out.println(p);
         }
         
         
-        List<Point> hm = HamiltonianCycle.getApproximateOptimalForCompleteGraph(floor);
+        List<Point> hm = HamiltonianCycle.getApproximateOptimalForCompleteGraph(floorUndir);
         
-        int startIndex = hm.indexOf(new Point(0,0));
+        int startIndex = hm.indexOf(new Point(5,1));
         
         ArrayList<Point> hmFromStart = new ArrayList<Point>();
         
@@ -178,6 +236,52 @@ public class TestPath {
         }
         
         
+        SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorDir = new SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		
+		floorDir.addVertex(new Point(1, 1));
+		floorDir.addVertex(new Point(1, 2));
+		floorDir.addVertex(new Point(1, 3));
+		floorDir.addVertex(new Point(1, 5));
+		floorDir.addVertex(new Point(2, 1));
+		floorDir.addVertex(new Point(2, 2));
+		floorDir.addVertex(new Point(2, 3));
+		floorDir.addVertex(new Point(2, 5));
+		floorDir.addVertex(new Point(3, 1));
+		floorDir.addVertex(new Point(3, 3));
+		floorDir.addVertex(new Point(3, 5));
+		floorDir.addVertex(new Point(4, 2));
+		floorDir.addVertex(new Point(4, 3));
+		floorDir.addVertex(new Point(4, 5));
+		floorDir.addVertex(new Point(5, 1));
+		floorDir.addVertex(new Point(5, 2));
+		floorDir.addVertex(new Point(5, 3));
+		floorDir.addVertex(new Point(5, 4));
+		floorDir.addVertex(new Point(5, 5));
+		
+		for(Point p: floorDir.vertexSet()){
+			
+		    int x = p.x;
+		    int y = p.y;
+			if (floorDir.containsVertex(new Point(x+1, y))){
+				floorDir.addEdge(p,new Point(x+1, y));
+				floorDir.setEdgeWeight(floorDir.getEdge(p,new Point(x+1, y)), 1);
+			}
+			if (floorDir.containsVertex(new Point(x-1, y))){
+				floorDir.addEdge(p,new Point(x-1, y));
+				floorDir.setEdgeWeight(floorDir.getEdge(p,new Point(x-1, y)), 1);
+			}
+			if (floorDir.containsVertex(new Point(x, y+1))){
+				floorDir.addEdge(p,new Point(x, y+1));
+				floorDir.setEdgeWeight(floorDir.getEdge(p,new Point(x, y+1)), 1);
+			}
+			if (floorDir.containsVertex(new Point(x, y-1))){
+				floorDir.addEdge(p,new Point(x, y-1));
+				floorDir.setEdgeWeight(floorDir.getEdge(p,new Point(x, y-1)), 1);
+			}
+			
+			
+		}
+        
         
         System.out.println("BIULD FINAL PATHHHH");
         ArrayList<Point> finalPath = new ArrayList<Point>();
@@ -190,7 +294,7 @@ public class TestPath {
         	System.out.println("--------");
         	
         	
-        	DijkstraShortestPath<Point, DefaultWeightedEdge> pathfinder = new DijkstraShortestPath<Point, DefaultWeightedEdge>(floorBack, p1, p2);
+        	DijkstraShortestPath<Point, DefaultWeightedEdge> pathfinder = new DijkstraShortestPath<Point, DefaultWeightedEdge>(floorDir, p1, p2);
 			GraphPath<Point, DefaultWeightedEdge> path = pathfinder.getPath();
         	List<DefaultWeightedEdge> edgeList = path.getEdgeList();
         	
@@ -198,9 +302,9 @@ public class TestPath {
         	for(int j = 0; j < edgeList.size(); j++)
         	{
         		DefaultWeightedEdge edge = edgeList.get(j);
-        		tempPath.add(floorBack.getEdgeTarget(edge));
-        		System.out.println(floorBack.getEdgeSource(edge));
-        		System.out.println(floorBack.getEdgeTarget(edge));
+        		tempPath.add(floorDir.getEdgeTarget(edge));
+        		System.out.println(floorDir.getEdgeSource(edge));
+        		System.out.println(floorDir.getEdgeTarget(edge));
         	}
         	System.out.println("--------");
         	finalPath.addAll(tempPath);
