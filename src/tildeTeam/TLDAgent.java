@@ -64,16 +64,7 @@ public class TLDAgent extends VAAgent {
 
 			this.firtsStep = false;
 			
-//			stampa il path
-			
-//			System.out.println("start: "+currPoint);
-//			for (Point point : path) {
-//				System.out.println(point);			
-//			}
-			
 		} // not 1° step
-
-		// eseguire la lista del path yoyo
 
 		if (vap.getCurrentTileStatus() == VATileStatus.DIRTY)	return new VAAction(VAActionType.SUCK);
 		int cx, cy, nx, ny;
@@ -81,9 +72,9 @@ public class TLDAgent extends VAAgent {
 		cx = currPoint.x;		cy = currPoint.y;
 
 		if (path.size() == 0) {
+			this.die();
 			return new VAAction(VAActionType.SUCK);
 		}// TODO noop
-		this.die();
 		Point nextP = path.remove(0);
 		nx = nextP.x;		ny = nextP.y;
 		
