@@ -31,11 +31,14 @@ public class TLDAgent extends VAAgent {
 	/** The path. */
 	ArrayList<Point> path;
 	ArrayList<Point> history;
-	Point pathCurrentPosition;
+	
 	
 	/**The visited. */
 //	ArrayList<Point> visited; TODO
-	TLDInnerWorld world;
+	TLDInnerWorld innerWorld;
+	
+	Point innerWorldPosition;
+	
 	
 	/**
 	 * Instantiates a new tLD agent.
@@ -46,7 +49,7 @@ public class TLDAgent extends VAAgent {
 		
 		super(energy);		
 		firtsStep = true;
-		world = new TLDInnerWorld();
+		innerWorld = new TLDInnerWorld();
 		path = new ArrayList<Point>();
 		history = new ArrayList<Point>();
 		
@@ -117,63 +120,63 @@ public class TLDAgent extends VAAgent {
 	}
 	
 	private Action nonObservableCase(VAPercept percept){
-		
 		if(firtsStep){  
 			history.add(new Point(0,0));
+			this.innerWorldPosition = new Point(0,0);
 			firtsStep = false;
+			
 		}
-		
-		Point currentPosition;
+
 		if(!this.path.isEmpty()){
 			for(Point p: this.path){
 				System.out.println(p);
 			}
-			currentPosition = pathCurrentPosition;
-			System.out.println("Current Position"+currentPosition);
+			System.out.println("Current Position"+innerWorldPosition);
 			Point nextPoint = path.remove(0);
 			System.out.println("NextPoint"+nextPoint);
 			System.out.println("<___________>");
-			currentPosition = nextPoint;
-			return moveAgent(currentPosition,nextPoint);
+			Point prePoint = innerWorldPosition;
+			innerWorldPosition = nextPoint;
+			return moveAgent(prePoint,nextPoint);
 		}
 
 		
-		currentPosition = history.get(history.size()-1);
+		innerWorldPosition = history.get(history.size()-1);
 		
 		VANeighborhood neighborhood = percept.getNeighborhood();
 		
-		world.updateWorld(currentPosition, percept.getNeighborhood());
+		innerWorld.updateWorld(innerWorldPosition, percept.getNeighborhood());
 		
 		ArrayList<Point> freeStage = new ArrayList<Point>();
 		
 		if(neighborhood.northIsFree()){
-			Point point = new Point(currentPosition.x+1, currentPosition.y);
-			if(!world.visited(point))
+			Point point = new Point(innerWorldPosition.x+1, innerWorldPosition.y);
+			if(!innerWorld.visited(point))
 				freeStage.add(point);
 		}
 		
 		if(neighborhood.southIsFree()){
-			Point point = new Point(currentPosition.x-1, currentPosition.y);
-			if(!world.visited(point))
+			Point point = new Point(innerWorldPosition.x-1, innerWorldPosition.y);
+			if(!innerWorld.visited(point))
 				freeStage.add(point);
 		}
 		
 		if(neighborhood.eastIsFree()){
-			Point point = new Point(currentPosition.x, currentPosition.y+1);
-			if(!world.visited(point))
+			Point point = new Point(innerWorldPosition.x, innerWorldPosition.y+1);
+			if(!innerWorld.visited(point))
 				freeStage.add(point);
 		}
 		
 		if(neighborhood.westIsFree()){
-			Point point = new Point(currentPosition.x, currentPosition.y-1);
-			if(!world.visited(point))
+			Point point = new Point(innerWorldPosition.x, innerWorldPosition.y-1);
+			if(!innerWorld.visited(point))
 				freeStage.add(point);
 		}
 		
 		Point nextPoint;
 		
 		if(freeStage.isEmpty()){
-			if(currentPosition.x == 0 && currentPosition.y == 0){
+			if(innerWorldPosition.x == 0 && innerWorldPosition.y == 0){
 				this.die();
 				return new VAAction(VAActionType.SUCK);
 			}
@@ -181,12 +184,12 @@ public class TLDAgent extends VAAgent {
 			
 			
 			history.remove(history.size()-1);
-			while(world.deadEnd(history.get(history.size()-1)) && 
+			while(innerWorld.deadEnd(history.get(history.size()-1)) && 
 					!history.get(history.size()-1).equals(new Point(0,0))){
 				history.remove(history.get(history.size()-1));
 			}
 			nextPoint = history.get(history.size()-1);
-			ArrayList<Point> pathFinded = world.findPath(currentPosition, nextPoint);
+			ArrayList<Point> pathFinded = innerWorld.findPath(innerWorldPosition, nextPoint);
 			this.path.addAll(pathFinded);
 			for(Point p: this.path){
 				System.out.println(p);
@@ -194,14 +197,18 @@ public class TLDAgent extends VAAgent {
 			nextPoint = this.path.remove(0);
 			System.out.println("NextPoint"+nextPoint);
 			System.out.println("<___________>");
-			this.pathCurrentPosition = nextPoint;
+			
 		}
 		else{
+			System.out.println("Current Position"+innerWorldPosition);
 			nextPoint = freeStage.get(0);
 			history.add(nextPoint);
+			System.out.println("NextPoint"+nextPoint);
 		}
 		
-		return moveAgent(currentPosition,nextPoint);
+		Point prePoint = innerWorldPosition;
+		innerWorldPosition = nextPoint;
+		return moveAgent(prePoint,nextPoint);
 	}
 	
 	private VAAction moveAgent(Point currentPosition ,Point nextPoint){
