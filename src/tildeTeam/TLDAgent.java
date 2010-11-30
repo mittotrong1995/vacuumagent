@@ -55,12 +55,12 @@ public class TLDAgent extends VAAgent {
 			e.printStackTrace();
 		}
 		VAPercept vap = (VAPercept) percept;
+//		return observableCase(vap);
 		return nonObservableCase(vap);
 
 	}
 	
 	private Action observableCase(VAPercept percept){
-		
 		
 		Point currPoint = percept.getVacuumAgentPosition();
 
@@ -85,32 +85,15 @@ public class TLDAgent extends VAAgent {
 		} // not 1° step
 
 		if (percept.getCurrentTileStatus() == VATileStatus.DIRTY)	return new VAAction(VAActionType.SUCK);
-		int cx, cy, nx, ny;
-
-		cx = currPoint.x;		cy = currPoint.y;
-
+	
 		if (path.size() == 0) {
 			this.die();
 			return new VAAction(VAActionType.SUCK);
 		}// TODO noop
-		Point nextP = path.remove(0);
-		nx = nextP.x;		ny = nextP.y;
 		
-		System.out.println("-----------"+cx+","+cy+" -> "+nx+","+ny);
+		Point nextP = path.remove(0);
+		return moveAgent(currPoint,nextP);
 
-		if (cy == ny && cx + 1 == nx) {
-			return new VAAction(VAActionType.MOVENORTH);
-		}// north e south sono invertiti
-		if (cy == ny && cx - 1 == nx) {
-			return new VAAction(VAActionType.MOVESOUTH);
-		}// north e south sono invertiti
-		if (cy+1 == ny && cx == nx) {
-			return new VAAction(VAActionType.MOVEEAST);
-		}// north e south sono invertiti
-		if (cy -1 == ny  && cx == nx) {
-			return new VAAction(VAActionType.MOVEWEST);
-		}
-		return null;
 	}
 	
 	private Action semiObservableCase(Percept percept){
@@ -136,8 +119,6 @@ public class TLDAgent extends VAAgent {
 		Point currentPosition = path.get(path.size()-1);
 		world.updateWorld(currentPosition, percept.getNeighborhood());
 		
-		
-//		System.out.println("curr "+currentPosition);
 		
 		ArrayList<Point> freeStage = new ArrayList<Point>();
 		
@@ -180,11 +161,11 @@ public class TLDAgent extends VAAgent {
 			path.add(nextPoint);
 		}
 		
-//		System.out.println("nextpoint: "+nextPoint.toString());
-//		
-//
-//		System.out.println("--------------------------------------------");
-//		System.out.println("--------------------------------------------");
+		return moveAgent(currentPosition,nextPoint);
+	}
+	
+	private VAAction moveAgent(Point currentPosition ,Point nextPoint){
+		
 		
 		int cy = currentPosition.y, cx = currentPosition.x, nx = nextPoint.x, ny = nextPoint.y;
 		
@@ -200,7 +181,7 @@ public class TLDAgent extends VAAgent {
 		if (cy -1 == ny  && cx == nx) {
 			return new VAAction(VAActionType.MOVEWEST);
 		}
-		return null;		
+		return new VAAction(VAActionType.MOVENORTH);		
 	}
 
 }
