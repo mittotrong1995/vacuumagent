@@ -30,7 +30,8 @@ public class TLDAgent extends VAAgent {
 	ArrayList<Point> path;
 	
 	/**The visited. */
-	ArrayList<Point> visited;
+//	ArrayList<Point> visited; TODO
+	TLDInnerWorld world;
 	
 	/**
 	 * Instantiates a new tLD agent.
@@ -39,9 +40,7 @@ public class TLDAgent extends VAAgent {
 	 */
 	public TLDAgent(int energy) {		super(energy);		firtsStep = true;	}
 
-	/**
-	 * Die.
-	 */
+	/**	 * Die.	 */
 	private void die() {		this.setAlive(false);	}
 
 	/* (non-Javadoc)
@@ -121,19 +120,22 @@ public class TLDAgent extends VAAgent {
 	
 	private Action nonObservableCase(VAPercept percept){
 		if(firtsStep){
-			path = new ArrayList<Point>();
-			visited = new ArrayList<Point>();
+			world = new TLDInnerWorld();
+			path = new ArrayList<Point>();    
 			path.add(new Point(0,0));
-			visited.add(new Point(0,0));
 			firtsStep = false;
 		}
 		
-		if (percept.getCurrentTileStatus() == VATileStatus.DIRTY)	return new VAAction(VAActionType.SUCK);
+		if (percept.getCurrentTileStatus() == VATileStatus.DIRTY){
+			return new VAAction(VAActionType.SUCK);
+		}
 		
 		VANeighborhood neighborhood = percept.getNeighborhood();
 		
 		
 		Point currentPosition = path.get(path.size()-1);
+		world.updateWorld(currentPosition, percept.getNeighborhood());
+		
 		
 //		System.out.println("curr "+currentPosition);
 		
@@ -141,30 +143,27 @@ public class TLDAgent extends VAAgent {
 		
 		if(neighborhood.northIsFree()){
 			Point point = new Point(currentPosition.x+1, currentPosition.y);
-			if(!visited.contains(point))
+			if(!world.visited(point))
 				freeStage.add(point);
 		}
 		
 		if(neighborhood.southIsFree()){
 			Point point = new Point(currentPosition.x-1, currentPosition.y);
-			if(!visited.contains(point))
+			if(!world.visited(point))
 				freeStage.add(point);
 		}
 		
 		if(neighborhood.eastIsFree()){
 			Point point = new Point(currentPosition.x, currentPosition.y+1);
-			if(!visited.contains(point))
+			if(!world.visited(point))
 				freeStage.add(point);
 		}
 		
 		if(neighborhood.westIsFree()){
 			Point point = new Point(currentPosition.x, currentPosition.y-1);
-			if(!visited.contains(point))
+			if(!world.visited(point))
 				freeStage.add(point);
 		}
-		
-//		for(Point p : freeStage)
-//			System.out.println("freeee "+p);
 		
 		Point nextPoint;
 		
@@ -179,7 +178,6 @@ public class TLDAgent extends VAAgent {
 		else{
 			nextPoint = freeStage.get(0);
 			path.add(nextPoint);
-			visited.add(nextPoint);
 		}
 		
 //		System.out.println("nextpoint: "+nextPoint.toString());
