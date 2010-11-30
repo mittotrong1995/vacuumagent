@@ -4,7 +4,14 @@
 package tildeTeam;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleDirectedWeightedGraph;
+import org.jgrapht.traverse.DepthFirstIterator;
 
 
 import vacuumAgent.VANeighborhood;
@@ -70,10 +77,10 @@ public class TLDInnerWorld {
 	public boolean deadEnd (Point p){
 		int x =p.x;
 		int y =p.y;
-		if(floor.get(new Point(x+1,y))== VATileStatus.UNDEFINED) return false;
-		if(floor.get(new Point(x-1,y))== VATileStatus.UNDEFINED) return false;
-		if(floor.get(new Point(x,y-1))== VATileStatus.UNDEFINED) return false;
-		if(floor.get(new Point(x,y+1))== VATileStatus.UNDEFINED) return false;
+		if(this.getTile(new Point(x+1,y))== VATileStatus.UNDEFINED) return false;
+		if(this.getTile(new Point(x-1,y))== VATileStatus.UNDEFINED) return false;
+		if(this.getTile(new Point(x,y-1))== VATileStatus.UNDEFINED) return false;
+		if(this.getTile(new Point(x,y+1))== VATileStatus.UNDEFINED) return false;
 		return true;
 	}
 	
@@ -113,7 +120,33 @@ public class TLDInnerWorld {
 		}
 	}
 	
+	public ArrayList<Point> findPath (Point p1,Point p2){
+		SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graph = TLDConvertToGraph.toGraphInnerWorld(this);
+		List<DefaultWeightedEdge> edgeList = DijkstraShortestPath.findPathBetween(graph, p1, p2);
+		
+		ArrayList<Point> tempPath = new ArrayList<Point>();
+		for (int j = 0; j < edgeList.size(); j++) {
+			DefaultWeightedEdge edge = edgeList.get(j);
+			tempPath.add(graph.getEdgeTarget(edge));
+		}
+		return tempPath;		
+	}
 	
+	@Override
+	public String toString() {
+		SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graph = TLDConvertToGraph.toGraphInnerWorld(this);
+		String out = "";
+		DepthFirstIterator<Point, DefaultWeightedEdge> iter = new DepthFirstIterator<Point, DefaultWeightedEdge>(
+				graph);
+		Point vertex;
+		while (iter.hasNext()) {
+			vertex = iter.next();
+			out += "Vertex " + vertex.toString()
+					+ " is connected to: "
+					+ graph.edgesOf(vertex).toString()+"\n";
+		}
+		return out;
+	}
 	
 	
 	

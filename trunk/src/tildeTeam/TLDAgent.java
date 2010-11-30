@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import javax.sound.sampled.TargetDataLine;
+
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
@@ -28,6 +30,8 @@ public class TLDAgent extends VAAgent {
 	
 	/** The path. */
 	ArrayList<Point> path;
+	ArrayList<Point> history;
+	Point pathCurrentPosition;
 	
 	/**The visited. */
 //	ArrayList<Point> visited; TODO
@@ -38,7 +42,15 @@ public class TLDAgent extends VAAgent {
 	 *
 	 * @param energy the energy
 	 */
-	public TLDAgent(int energy) {		super(energy);		firtsStep = true;	}
+	public TLDAgent(int energy) {		
+		
+		super(energy);		
+		firtsStep = true;
+		world = new TLDInnerWorld();
+		path = new ArrayList<Point>();
+		history = new ArrayList<Point>();
+		
+	}
 
 	/**	 * Die.	 */
 	private void die() {		this.setAlive(false);	}
@@ -55,6 +67,11 @@ public class TLDAgent extends VAAgent {
 			e.printStackTrace();
 		}
 		VAPercept vap = (VAPercept) percept;
+		
+		if (vap.getCurrentTileStatus() == VATileStatus.DIRTY)	
+			return new VAAction(VAActionType.SUCK);
+		
+		
 //		return observableCase(vap);
 		return nonObservableCase(vap);
 
@@ -84,8 +101,6 @@ public class TLDAgent extends VAAgent {
 			
 		} // not 1° step
 
-		if (percept.getCurrentTileStatus() == VATileStatus.DIRTY)	return new VAAction(VAActionType.SUCK);
-	
 		if (path.size() == 0) {
 			this.die();
 			return new VAAction(VAActionType.SUCK);
@@ -102,23 +117,32 @@ public class TLDAgent extends VAAgent {
 	}
 	
 	private Action nonObservableCase(VAPercept percept){
-		if(firtsStep){
-			world = new TLDInnerWorld();
-			path = new ArrayList<Point>();    
-			path.add(new Point(0,0));
+		
+		if(firtsStep){  
+			history.add(new Point(0,0));
 			firtsStep = false;
 		}
 		
-		if (percept.getCurrentTileStatus() == VATileStatus.DIRTY){
-			return new VAAction(VAActionType.SUCK);
+		Point currentPosition;
+		if(!this.path.isEmpty()){
+			for(Point p: this.path){
+				System.out.println(p);
+			}
+			currentPosition = pathCurrentPosition;
+			System.out.println("Current Position"+currentPosition);
+			Point nextPoint = path.remove(0);
+			System.out.println("NextPoint"+nextPoint);
+			System.out.println("<___________>");
+			currentPosition = nextPoint;
+			return moveAgent(currentPosition,nextPoint);
 		}
+
+		
+		currentPosition = history.get(history.size()-1);
 		
 		VANeighborhood neighborhood = percept.getNeighborhood();
 		
-		
-		Point currentPosition = path.get(path.size()-1);
 		world.updateWorld(currentPosition, percept.getNeighborhood());
-		
 		
 		ArrayList<Point> freeStage = new ArrayList<Point>();
 		
@@ -153,12 +177,28 @@ public class TLDAgent extends VAAgent {
 				this.die();
 				return new VAAction(VAActionType.SUCK);
 			}
-			path.remove(path.size()-1);
-			nextPoint = path.get(path.size()-1);
+		
+			
+			
+			history.remove(history.size()-1);
+			while(world.deadEnd(history.get(history.size()-1)) && 
+					!history.get(history.size()-1).equals(new Point(0,0))){
+				history.remove(history.get(history.size()-1));
+			}
+			nextPoint = history.get(history.size()-1);
+			ArrayList<Point> pathFinded = world.findPath(currentPosition, nextPoint);
+			this.path.addAll(pathFinded);
+			for(Point p: this.path){
+				System.out.println(p);
+			}
+			nextPoint = this.path.remove(0);
+			System.out.println("NextPoint"+nextPoint);
+			System.out.println("<___________>");
+			this.pathCurrentPosition = nextPoint;
 		}
 		else{
 			nextPoint = freeStage.get(0);
-			path.add(nextPoint);
+			history.add(nextPoint);
 		}
 		
 		return moveAgent(currentPosition,nextPoint);
