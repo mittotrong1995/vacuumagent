@@ -15,7 +15,9 @@ import vacuumAgent.VAAgent;
 import vacuumAgent.VAPercept;
 import vacuumAgent.VAAction.VAActionType;
 import vacuumAgent.VATile.VATileStatus;
+import vacuumAgent.environment.VAEnvNonObservable;
 import vacuumAgent.environment.VAEnvObservable;
+import vacuumAgent.environment.VAEnvSemiObservable;
 import vacuumAgent.environment.VAEnvironment;
 import view.principal.GenerateMap;
 import view.principal.GenerateRandomlyActionListener;
@@ -201,7 +203,7 @@ public class Main extends JFrame{
 			}
 		};*/
 				
-		VAEnvObservable state = new VAEnvObservable( a, point, null );
+		VAEnvSemiObservable state = new VAEnvSemiObservable( a, point, null );
 		
 		new Main( state );
 	}
