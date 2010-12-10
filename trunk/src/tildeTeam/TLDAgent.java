@@ -76,6 +76,7 @@ public class TLDAgent extends VAAgent {
 		
 		
 //		return observableCase(vap);
+//		return semiObservableCase(percept);
 		return nonObservableCase(vap);
 
 	}

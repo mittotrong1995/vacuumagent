@@ -270,15 +270,15 @@ public class TestPath {
 		floorUndir.removeVertex(new Point(5, 4));
 		floorUndir.removeVertex(new Point(5, 5));
 
-		DepthFirstIterator<Point, DefaultWeightedEdge> iter = new DepthFirstIterator<Point, DefaultWeightedEdge>(
-				floorUndir);
-		Point vertex;
-		while (iter.hasNext()) {
-			vertex = iter.next();
-			System.out.println("Vertex " + vertex.toString()
-					+ " is connected to: "
-					+ floorUndir.edgesOf(vertex).toString());
-		}
+//		DepthFirstIterator<Point, DefaultWeightedEdge> iter = new DepthFirstIterator<Point, DefaultWeightedEdge>(
+//				floorUndir);
+//		Point vertex;
+//		while (iter.hasNext()) {
+//			vertex = iter.next();
+//			System.out.println("Vertex " + vertex.toString()
+//					+ " is connected to: "
+//					+ floorUndir.edgesOf(vertex).toString());
+//		}
 
 		for (Point p : HamiltonianCycle
 				.getApproximateOptimalForCompleteGraph(floorUndir)) {
