@@ -38,7 +38,7 @@ public class VAEnvSemiObservable extends VAEnvironment {
 		VATileStatus currentTileStatus = floor.getTile(vacuumAgentPosition)
 				.getStatus();
 		VANeighborhood neighborhood = this.getNeighborhood(vacuumAgentPosition);
-		VAFloor undefFloor = new VAFloor(floor.getSize());
+		VAFloor undefFloor = new VAFloor(floor.getSize(), VATileStatus.UNDEFINED);
 		VAPercept percept = new VAPercept(undefFloor, this.vacuumAgentPosition,
 				currentTileStatus, neighborhood);
 		return percept;

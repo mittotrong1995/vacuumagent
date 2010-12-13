@@ -23,7 +23,7 @@ public class VATile implements EnvironmentObject {
 	 */
 	public VATile() {
 		super();
-		status = VATileStatus.UNDEFINED;
+		status = VATileStatus.CLEAN;
 	}
 
 	/**

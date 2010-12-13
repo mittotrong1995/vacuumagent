@@ -17,7 +17,8 @@ public class VAAction implements Action {
  MOVENORTH, 
  MOVESOUTH, 
  MOVEWEST, 
- MOVEEAST
+ MOVEEAST,
+ NOOP
 	}
 
 	/** The action type. */

@@ -46,5 +46,5 @@ public interface Environment {
 	 *            the Agent for which a performance measure is to be retrieved.
 	 * @return the performance measure associated with the Agent.
 	 */
-	double getPerformanceMeasure(Agent forAgent);
+	double getPerformanceMeasure();
 }
