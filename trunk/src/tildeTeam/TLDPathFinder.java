@@ -166,7 +166,7 @@ public class TLDPathFinder {
 		Point furthest = nodes.get(0);
 		int max=distanceBetween(start,furthest);
 		for (Point point : nodes) {		
-			int dist = distanceBetween(start,furthest);
+			int dist = distanceBetween(start,point);
 			if(dist > max){
 				max=dist;			 
 				furthest = point;
