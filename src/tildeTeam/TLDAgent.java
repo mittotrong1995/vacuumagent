@@ -3,12 +3,15 @@ package tildeTeam;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import javax.sound.sampled.TargetDataLine;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
+
+import com.sun.jndi.ldap.PersistentSearchControl;
 
 import framework.Action;
 import framework.Percept;
@@ -75,9 +78,9 @@ public class TLDAgent extends VAAgent {
 			return new VAAction(VAActionType.SUCK);
 		
 		
-//		return observableCase(vap);
+		return observableCase(vap);
 //		return semiObservableCase(percept);
-		return nonObservableCase(vap);
+//		return nonObservableCase(vap);
 
 	}
 	
@@ -95,12 +98,13 @@ public class TLDAgent extends VAAgent {
 						dirtyNodes.add(new Point(i, j));// dirtyNodes
 				}
 			}
-			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorDir = TLDConvertToGraph.toGraph(percept.getFloor());
-
-			TLDPathFinder pathFinder = new TLDPathFinder(floorDir);
-
-			this.path = pathFinder.findPath(currPoint, dirtyNodes);
-
+//			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorDir = TLDConvertToGraph.toGraph(percept.getFloor());
+//
+//			TLDPathFinder pathFinder = new TLDPathFinder(floorDir);
+//
+//			this.path = pathFinder.findCycle(currPoint, dirtyNodes);
+			this.path = this.findGoodCycle(percept, currPoint, dirtyNodes, this.energy);
+			
 			this.firtsStep = false;
 			
 		} // not 1° step
@@ -115,9 +119,54 @@ public class TLDAgent extends VAAgent {
 
 	}
 	
-	private Action semiObservableCase(Percept percept){
+	
+	private ArrayList<Point> findGoodCycle (VAPercept percept, Point start, ArrayList<Point> dirtyNodes, int energy){
 		
-		return null;		
+		SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorDir = TLDConvertToGraph.toGraph(percept.getFloor());
+		
+		TLDPathFinder pathFinder = new TLDPathFinder(floorDir);
+		
+		ArrayList<Point> goodCycle = pathFinder.findCycle(start, dirtyNodes);
+		
+		if(goodCycle.size()+dirtyNodes.size()<= energy)
+			return goodCycle;
+		
+		int maxVisited = this.dirtyVisited(goodCycle, dirtyNodes, energy);
+		int n = dirtyNodes.size();
+		int k =  maxVisited;
+		
+		
+		for(int i = n; i > k; i--){
+			dirtyNodes.remove(pathFinder.furthestNodeFrom(start, dirtyNodes));
+			ArrayList<Point> tempCycle = pathFinder.findCycle(start, dirtyNodes);
+			int tempVisited = dirtyVisited(tempCycle, dirtyNodes, energy);
+			
+			if(tempVisited > maxVisited){
+				maxVisited = tempVisited;
+				goodCycle = tempCycle;
+			}
+		}
+		
+		return goodCycle;
+	}
+	
+	private int dirtyVisited(ArrayList<Point> path, ArrayList<Point> dirtyNodes, int energy){
+		int cont = 0;
+		
+		for(int i = 1; i <= energy; i++){
+			if(dirtyNodes.contains(path.get(i))){
+				if(i < energy){
+					i++;
+					cont++;
+				}
+			}
+		}
+		return cont;
+	}
+	
+	
+	private Action semiObservableCase(VAPercept percept){
+		return nonObservableCase(percept);		
 	}
 	
 	private Action nonObservableCase(VAPercept percept){

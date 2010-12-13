@@ -11,6 +11,8 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import vacuumAgent.VAConvertToGraph;
+
 // TODO: Auto-generated Javadoc
 /**
  * The Class TLDPathFinder.
@@ -38,7 +40,7 @@ public class TLDPathFinder {
 	 * @param nodes the dirty tiles
 	 * @return the array list
 	 */
-	public ArrayList<Point> findPath(Point start, ArrayList<Point> nodes) {
+	public ArrayList<Point> findCycle(Point start, ArrayList<Point> nodes) {
 		SimpleWeightedGraph<Point, DefaultWeightedEdge> unDirGraph = toUnDirGraph(this.graph);
 		this.transitiveClosure(unDirGraph);
 
@@ -145,5 +147,33 @@ public class TLDPathFinder {
 		}
 
 	}
+	private List<Point> findPath(Point p1, Point p2){
+		List<DefaultWeightedEdge> edgeList = DijkstraShortestPath.findPathBetween(graph, p1, p2);
+		
+		ArrayList<Point> tempPath = new ArrayList<Point>();
+		for (int j = 0; j < edgeList.size(); j++) {
+			DefaultWeightedEdge edge = edgeList.get(j);
+			tempPath.add(graph.getEdgeTarget(edge));
+		}
+		return tempPath;
+	}
+	
+	private int distanceBetween(Point p1,Point p2){
+		return findPath(p1, p2).size();		
+	}
+	
+	public Point furthestNodeFrom(Point start, List<Point> nodes){		
+		Point furthest = nodes.get(0);
+		int max=distanceBetween(start,furthest);
+		for (Point point : nodes) {		
+			int dist = distanceBetween(start,furthest);
+			if(dist > max){
+				max=dist;			 
+				furthest = point;
+			}
+		}
+		return furthest;
+	}
+
 
 }
