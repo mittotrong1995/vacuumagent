@@ -47,6 +47,18 @@ public class VAFloor {
 			}
 		}
 	}
+	
+	public VAFloor(int size, VATileStatus defaultStatus) {
+		super();
+//		size=this.size;
+		this.floor = new VATile[size][size];
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				this.floor[i][j] = new VATile();
+				this.floor[i][j].setStatus(defaultStatus);
+			}
+		}
+	}
 
 	/**
 	 * Gets the tile.

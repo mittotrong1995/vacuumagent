@@ -129,8 +129,9 @@ public abstract class VAEnvironment implements Environment {
 		VAAction action = (VAAction) vacuumAgent.execute(percept);
 		VANeighborhood neighborhood = this.getNeighborhood(vacuumAgentPosition);
 
-		
-		
+		if (action.getActionType() == VAActionType.NOOP){
+			return;
+		}
 		
 		if (action.getActionType() == VAActionType.SUCK) {
 			floor.getTile(vacuumAgentPosition).setStatus(VATileStatus.CLEAN);
@@ -165,7 +166,7 @@ public abstract class VAEnvironment implements Environment {
 			vacuumAgent.spendEnergy();
 		}
 		this.stepCount++;
-		System.out.println("MISURA DI PRESTAZIONE >>>> "+this.getPerformanceMeasure(this.vacuumAgent));
+		System.out.println("MISURA DI PRESTAZIONE >>>> "+this.getPerformanceMeasure());
 
 	}
 
@@ -212,7 +213,7 @@ public abstract class VAEnvironment implements Environment {
 	 * @see framework.Environment#getPerformanceMeasure(framework.Agent)
 	 */
 	@Override
-	public double getPerformanceMeasure(Agent forAgent) {
+	public double getPerformanceMeasure() {
 		int clean = floor.countClean();
 		System.out.println("Clean ->"+clean);
 		int reachable = floor.countReachable();
