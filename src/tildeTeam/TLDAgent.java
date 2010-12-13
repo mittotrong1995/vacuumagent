@@ -98,11 +98,12 @@ public class TLDAgent extends VAAgent {
 						dirtyNodes.add(new Point(i, j));// dirtyNodes
 				}
 			}
+			
 //			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorDir = TLDConvertToGraph.toGraph(percept.getFloor());
-//
 //			TLDPathFinder pathFinder = new TLDPathFinder(floorDir);
-//
 //			this.path = pathFinder.findCycle(currPoint, dirtyNodes);
+			
+			
 			this.path = this.findGoodCycle(percept, currPoint, dirtyNodes, this.energy);
 			
 			this.firtsStep = false;
@@ -111,8 +112,8 @@ public class TLDAgent extends VAAgent {
 
 		if (path.size() == 0) {
 			this.die();
-			return new VAAction(VAActionType.SUCK);
-		}// TODO noop
+			return new VAAction(VAActionType.NOOP);
+		}
 		
 		Point nextP = path.remove(0);
 		return moveAgent(currPoint,nextP);
@@ -123,29 +124,30 @@ public class TLDAgent extends VAAgent {
 	private ArrayList<Point> findGoodCycle (VAPercept percept, Point start, ArrayList<Point> dirtyNodes, int energy){
 		
 		SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorDir = TLDConvertToGraph.toGraph(percept.getFloor());
-		
 		TLDPathFinder pathFinder = new TLDPathFinder(floorDir);
-		
 		ArrayList<Point> goodCycle = pathFinder.findCycle(start, dirtyNodes);
 		
-		if(goodCycle.size()+dirtyNodes.size()<= energy)
-			return goodCycle;
-		
-		int maxVisited = this.dirtyVisited(goodCycle, dirtyNodes, energy);
-		int n = dirtyNodes.size();
-		int k =  maxVisited;
-		
-		
-		for(int i = n; i > k; i--){
-			dirtyNodes.remove(pathFinder.furthestNodeFrom(start, dirtyNodes));
-			ArrayList<Point> tempCycle = pathFinder.findCycle(start, dirtyNodes);
-			int tempVisited = dirtyVisited(tempCycle, dirtyNodes, energy);
+		if(goodCycle.size()+dirtyNodes.size()<= energy){
 			
-			if(tempVisited > maxVisited){
-				maxVisited = tempVisited;
-				goodCycle = tempCycle;
-			}
-		}
+			System.out.println("SUKA");
+			return goodCycle;
+	    }
+//		
+//		int maxVisited = this.dirtyVisited(goodCycle, dirtyNodes, energy);
+//		int n = dirtyNodes.size();
+//		int k =  maxVisited;
+//		
+//		
+//		for(int i = n; i > k; i--){
+//			dirtyNodes.remove(pathFinder.furthestNodeFrom(start, dirtyNodes));
+//			ArrayList<Point> tempCycle = pathFinder.findCycle(start, dirtyNodes);
+//			int tempVisited = dirtyVisited(tempCycle, dirtyNodes, energy);
+//			
+//			if(tempVisited > maxVisited){
+//				maxVisited = tempVisited;
+//				goodCycle = tempCycle;
+//			}
+//		}
 		
 		return goodCycle;
 	}

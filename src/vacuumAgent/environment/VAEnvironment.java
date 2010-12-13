@@ -166,7 +166,7 @@ public abstract class VAEnvironment implements Environment {
 			vacuumAgent.spendEnergy();
 		}
 		this.stepCount++;
-		System.out.println("MISURA DI PRESTAZIONE >>>> "+this.getPerformanceMeasure());
+//		System.out.println("MISURA DI PRESTAZIONE >>>> "+this.getPerformanceMeasure());
 
 	}
 
@@ -215,20 +215,20 @@ public abstract class VAEnvironment implements Environment {
 	@Override
 	public double getPerformanceMeasure() {
 		int clean = floor.countClean();
-		System.out.println("Clean ->"+clean);
+//		System.out.println("Clean ->"+clean);
 		int reachable = floor.countReachable();
-		System.out.println("Reachable ->"+reachable);
-		System.out.println(vacuumAgentPosition);
-		System.out.println(startPosition);
+//		System.out.println("Reachable ->"+reachable);
+//		System.out.println(vacuumAgentPosition);
+//		System.out.println(startPosition);
 		int distanceFromStart = floor.distanceBetween(vacuumAgentPosition, startPosition);
-		System.out.println("distanceFromStart->"+distanceFromStart);
+//		System.out.println("distanceFromStart->"+distanceFromStart);
 		
 		double p1 = Math.pow(clean, 2) / Math.pow(reachable, 2);
-		System.out.println("p1->"+p1);
+//		System.out.println("p1->"+p1);
 		double p2 = Math.log10(distanceFromStart / (Math.sqrt(reachable)*2) + 1)/2;
-		System.out.println("p2->"+p2);
+//		System.out.println("p2->"+p2);
 		double p3 = Math.log10(stepCount / (reachable*3) + 1)/3;
-		System.out.println("p3->"+p3);
+//		System.out.println("p3->"+p3);
 			
 		return p1/(1+p2+p3);
 	}
