@@ -107,7 +107,7 @@ public class TestPath {
 		TLDPathFinder pathFinder = new TLDPathFinder(floorDir);
 
 		ArrayList<Point> finalPath = pathFinder
-				.findPath(new Point(4,0), dirtyNodes);
+				.findCycle(new Point(4,0), dirtyNodes);
 
 		System.out.println("FINAL PATHHHHYOOYYOYOYOOY");
 		for (Point p : finalPath) {
@@ -179,7 +179,7 @@ public class TestPath {
 		nodes.add(new Point(2, 5));
 		nodes.add(new Point(1, 1));
 		ArrayList<Point> finalPath = pathFinder
-				.findPath(new Point(5, 1), nodes);
+				.findCycle(new Point(5, 1), nodes);
 
 		System.out.println("FINAL PATHHHH");
 		for (Point p : finalPath) {
