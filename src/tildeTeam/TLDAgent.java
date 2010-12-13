@@ -130,15 +130,16 @@ public class TLDAgent extends VAAgent {
 		if(goodCycle.size()+dirtyNodes.size()<= energy){
 			return goodCycle;
 	    }
-//		
+		
 		int maxVisited = this.dirtyVisited(goodCycle, dirtyNodes, energy);
 		int n = dirtyNodes.size();
 		int k =  maxVisited;
+		goodCycle = cleanAndGoBack(goodCycle, dirtyNodes, maxVisited, pathFinder, start);
 		System.out.println("N:"+n);
 		System.out.println("K:"+k);
 		
 
-		for(int i = n; i > k; i--){
+		for(int i = n; i > k && i > 1; i--){
 			Point furthestNode = pathFinder.furthestNodeFrom(start, dirtyNodes); 
 			System.out.println(furthestNode);
 			dirtyNodes.remove(furthestNode);
@@ -148,8 +149,12 @@ public class TLDAgent extends VAAgent {
 			System.out.println("K:"+tempVisited);
 			if(tempVisited > maxVisited){
 				maxVisited = tempVisited;
-				goodCycle = tempCycle;
+				goodCycle = cleanAndGoBack(tempCycle, dirtyNodes, maxVisited, pathFinder, start);
 			}
+		}
+		
+		if (maxVisited == 0){
+			return new ArrayList<Point>();
 		}
 		
 		return goodCycle;
@@ -157,16 +162,36 @@ public class TLDAgent extends VAAgent {
 	
 	private int dirtyVisited(ArrayList<Point> path, ArrayList<Point> dirtyNodes, int energy){
 		int cont = 0;
+		int sucked = 0;
 		
-		for(int i = 0; i < energy && i < path.size(); i++){
+		for(int i = 0; i < energy - sucked && i < path.size(); i++){
 			if(dirtyNodes.contains(path.get(i))){
 				if(i < energy-1){
-					i++;
 					cont++;
+					sucked++;
 				}
 			}
 		}
 		return cont;
+	}
+	
+	private ArrayList<Point> cleanAndGoBack(ArrayList<Point> path, ArrayList<Point> dirtyNodes, int maxVisited, TLDPathFinder pathFinder, Point start){
+		ArrayList<Point> out = new ArrayList<Point>();
+		
+		int i = 0;
+		
+		while(maxVisited > 0 && i < path.size()){
+			out.add(path.get(i));
+			if(dirtyNodes.contains(path.get(i))){
+				maxVisited--;
+			}
+			i++;
+		}
+		
+		if(out.size() > 0)
+			out.addAll(pathFinder.findPath(out.get(out.size()-1), start));
+		
+		return out;
 	}
 	
 	

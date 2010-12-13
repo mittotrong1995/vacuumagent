@@ -21,6 +21,7 @@ public class TLDPathFinder {
 
 	/** The graph. */
 	SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graph;
+	SimpleWeightedGraph<Point, DefaultWeightedEdge> unDirGraph;
 
 	/**
 	 * Instantiates a new tLD path finder.
@@ -31,6 +32,8 @@ public class TLDPathFinder {
 			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graph) {
 		super();
 		this.graph = graph;
+		this.unDirGraph = toUnDirGraph(this.graph);
+		this.transitiveClosure(unDirGraph);
 	}
 
 	/**
@@ -41,24 +44,23 @@ public class TLDPathFinder {
 	 * @return the array list
 	 */
 	public ArrayList<Point> findCycle(Point start, ArrayList<Point> nodes) {
-		SimpleWeightedGraph<Point, DefaultWeightedEdge> unDirGraph = toUnDirGraph(this.graph);
-		this.transitiveClosure(unDirGraph);
-
-		if (!unDirGraph.containsVertex(start))
+		SimpleWeightedGraph<Point, DefaultWeightedEdge> tempUnDirGraph = (SimpleWeightedGraph<Point, DefaultWeightedEdge>) this.unDirGraph.clone(); 
+		
+		if (!tempUnDirGraph.containsVertex(start))
 			return null;
 
 		ArrayList<Point> toRemove = new ArrayList<Point>();
-		for (Point p : unDirGraph.vertexSet()) {
+		for (Point p : tempUnDirGraph.vertexSet()) {
 			if (!nodes.contains(p))
 				toRemove.add(p);
 		}
 		toRemove.remove(start);
 		for (Point p : toRemove) {
-			unDirGraph.removeVertex(p);
+			tempUnDirGraph.removeVertex(p);
 		}
 
 		List<Point> hm = HamiltonianCycle
-				.getApproximateOptimalForCompleteGraph(unDirGraph);
+				.getApproximateOptimalForCompleteGraph(tempUnDirGraph);
 
 		ArrayList<Point> hmFromStart = new ArrayList<Point>();
 
@@ -147,7 +149,8 @@ public class TLDPathFinder {
 		}
 
 	}
-	private List<Point> findPath(Point p1, Point p2){
+	
+	public List<Point> findPath(Point p1, Point p2){
 		List<DefaultWeightedEdge> edgeList = DijkstraShortestPath.findPathBetween(graph, p1, p2);
 		
 		ArrayList<Point> tempPath = new ArrayList<Point>();
