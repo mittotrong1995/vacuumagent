@@ -198,6 +198,7 @@ public class TLDAgent extends VAAgent {
 	private Action semiObservableCase(VAPercept percept){
 		return nonObservableCase(percept);		
 	}
+
 	
 	private Action nonObservableCase(VAPercept percept){
 		if(firtsStep){  
@@ -208,6 +209,7 @@ public class TLDAgent extends VAAgent {
 		}
 
 		if(!this.path.isEmpty()){
+
 			for(Point p: this.path){
 				System.out.println(p);
 			}
@@ -218,6 +220,12 @@ public class TLDAgent extends VAAgent {
 			Point prePoint = innerWorldPosition;
 			innerWorldPosition = nextPoint;
 			return moveAgent(prePoint,nextPoint);
+		}else{
+			if(history.isEmpty()){
+				System.out.println("!!!!energia rimasta:"+energy);
+				this.die();
+				return new VAAction(VAActionType.NOOP);
+			}
 		}
 
 		
@@ -258,7 +266,7 @@ public class TLDAgent extends VAAgent {
 		if(freeStage.isEmpty()){
 			if(innerWorldPosition.x == 0 && innerWorldPosition.y == 0){
 				this.die();
-				return new VAAction(VAActionType.SUCK);
+				return new VAAction(VAActionType.NOOP);
 			}
 		
 			
@@ -270,6 +278,13 @@ public class TLDAgent extends VAAgent {
 			}
 			nextPoint = history.get(history.size()-1);
 			ArrayList<Point> pathFinded = innerWorld.findPath(innerWorldPosition, nextPoint);
+			
+			
+			if(energy < pathFinded.size()+2){
+				pathFinded = innerWorld.findPath(innerWorldPosition,new Point(0,0));
+				history.clear();				
+			}
+
 			this.path.addAll(pathFinded);
 			for(Point p: this.path){
 				System.out.println(p);
@@ -291,6 +306,7 @@ public class TLDAgent extends VAAgent {
 		return moveAgent(prePoint,nextPoint);
 	}
 	
+
 	private VAAction moveAgent(Point currentPosition ,Point nextPoint){
 		
 		
