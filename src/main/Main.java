@@ -184,7 +184,7 @@ public class Main extends JFrame{
 	public static void main( String[] args ) {
 		Point point = new Point( 0, 0 );
 		
-		VAAgent a = new TLDAgent(10);
+		VAAgent a = new TLDAgent(29);
 		
 				
 		VAEnvObservable state = new VAEnvObservable( a, point, null );
