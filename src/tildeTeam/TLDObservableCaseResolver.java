@@ -74,16 +74,22 @@ public class TLDObservableCaseResolver {
 		return goodCycle;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private int dirtyVisited(ArrayList<Point> path, ArrayList<Point> dirtyNodes, int energy){
 		int cont = 0;
 		int sucked = 0;
+		ArrayList<Point> tempDirtyNodes = (ArrayList<Point>) dirtyNodes.clone();
 		
 		for(int i = 0; i < energy - sucked && i < path.size(); i++){
-			if(dirtyNodes.contains(path.get(i))){
+			if(tempDirtyNodes.contains(path.get(i))){
+				
 				if(i < energy-sucked-1){
 					cont++;
 					sucked++;
+					tempDirtyNodes.remove(path.get(i));
+					
 				}
+				
 			}
 		}
 		return cont;
@@ -93,11 +99,14 @@ public class TLDObservableCaseResolver {
 		ArrayList<Point> out = new ArrayList<Point>();
 		
 		int i = 0;
+		ArrayList<Point> tempDirtyNodes = (ArrayList<Point>) dirtyNodes.clone();
+		
 		
 		while(maxVisited > 0 && i < path.size()){
 			out.add(path.get(i));
-			if(dirtyNodes.contains(path.get(i))){
+			if(tempDirtyNodes.contains(path.get(i))){
 				maxVisited--;
+				tempDirtyNodes.remove(path.get(i));
 			}
 			i++;
 		}
