@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.alg.HamiltonianCycle;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -21,7 +20,7 @@ public class TLDObservableCaseResolver {
 
 	/** The graph. */
 	SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graph;
-	SimpleWeightedGraph<Point, DefaultWeightedEdge> unDirGraph;
+	SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> transGraph;
 
 	/**
 	 * Instantiates a new tLD path finder.
@@ -33,37 +32,37 @@ public class TLDObservableCaseResolver {
 			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graph) {
 		super();
 		this.graph = graph;
-		this.unDirGraph = toUnDirGraph(this.graph);
-		this.transitiveClosure(unDirGraph);
+//		this.unDirGraph = toUnDirGraph(this.graph);
+		this.transGraph = (SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge>) graph.clone();
+		this.transitiveClosure(transGraph);
 	}
 	
 	public ArrayList<Point> findGoodCycle (VAPercept percept, Point start, ArrayList<Point> dirtyNodes, int energy){
 		
-		ArrayList<Point> goodCycle = this.findCycle(start, dirtyNodes);
+		ArrayList<Point> goodCycle = this.findCycle(start, dirtyNodes, energy);
+		dirtyNodes.remove(start);
 		
-		if(goodCycle.size()+dirtyNodes.size()<= energy){
-			return goodCycle;
+		if(goodCycle.size() - 2 == dirtyNodes.size()){
+			return buildPath(goodCycle);
 	    }
 		
-		int maxVisited = this.dirtyVisited(goodCycle, dirtyNodes, energy);
+		int maxVisited = goodCycle.size() - 2;
 		int n = dirtyNodes.size();
 		int k =  maxVisited;
-		goodCycle = cleanAndGoBack(start, goodCycle, dirtyNodes, maxVisited);
 		System.out.println("N:"+n);
 		System.out.println("K:"+k);
 		
-
 		for(int i = n; i > k && i > 1; i--){
 			Point furthestNode = this.furthestNodeFrom(start, dirtyNodes); 
 			System.out.println(furthestNode);
 			dirtyNodes.remove(furthestNode);
-			ArrayList<Point> tempCycle = this.findCycle(start, dirtyNodes);
+			ArrayList<Point> tempCycle = this.findCycle(start, dirtyNodes, energy);
 			System.out.println("N:"+n);
-			int tempVisited = dirtyVisited(tempCycle, dirtyNodes, energy);
+			int tempVisited = tempCycle.size() - 2;
 			System.out.println("K:"+tempVisited);
 			if(tempVisited > maxVisited){
 				maxVisited = tempVisited;
-				goodCycle = cleanAndGoBack(start, tempCycle, dirtyNodes, maxVisited);
+				goodCycle = tempCycle;
 			}
 		}
 		
@@ -71,50 +70,8 @@ public class TLDObservableCaseResolver {
 			return new ArrayList<Point>();
 		}
 		
-		return goodCycle;
-	}
-	
-	@SuppressWarnings("unchecked")
-	private int dirtyVisited(ArrayList<Point> path, ArrayList<Point> dirtyNodes, int energy){
-		int cont = 0;
-		int sucked = 0;
-		ArrayList<Point> tempDirtyNodes = (ArrayList<Point>) dirtyNodes.clone();
+		return buildPath(goodCycle);
 		
-		for(int i = 0; i < energy - sucked && i < path.size(); i++){
-			if(tempDirtyNodes.contains(path.get(i))){
-				
-				if(i < energy-sucked-1){
-					cont++;
-					sucked++;
-					tempDirtyNodes.remove(path.get(i));
-					
-				}
-				
-			}
-		}
-		return cont;
-	}
-	
-	private ArrayList<Point> cleanAndGoBack(Point start, ArrayList<Point> path, ArrayList<Point> dirtyNodes, int maxVisited){
-		ArrayList<Point> out = new ArrayList<Point>();
-		
-		int i = 0;
-		ArrayList<Point> tempDirtyNodes = (ArrayList<Point>) dirtyNodes.clone();
-		
-		
-		while(maxVisited > 0 && i < path.size()){
-			out.add(path.get(i));
-			if(tempDirtyNodes.contains(path.get(i))){
-				maxVisited--;
-				tempDirtyNodes.remove(path.get(i));
-			}
-			i++;
-		}
-		
-		if(out.size() > 0)
-			out.addAll(this.findPath(out.get(out.size()-1), start));
-		
-		return out;
 	}
 	
 	/**
@@ -127,8 +84,8 @@ public class TLDObservableCaseResolver {
 	 * @return the array list
 	 */
 	@SuppressWarnings("unchecked")
-	public ArrayList<Point> findCycle(Point start, ArrayList<Point> nodes) {
-		SimpleWeightedGraph<Point, DefaultWeightedEdge> tempUnDirGraph = (SimpleWeightedGraph<Point, DefaultWeightedEdge>) this.unDirGraph
+	public ArrayList<Point> findCycle(Point start, ArrayList<Point> nodes, int energy) {
+		SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> tempUnDirGraph = (SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge>) this.transGraph
 				.clone();
 
 		if (!tempUnDirGraph.containsVertex(start))
@@ -143,21 +100,63 @@ public class TLDObservableCaseResolver {
 		for (Point p : toRemove) {
 			tempUnDirGraph.removeVertex(p);
 		}
+		toRemove.clear();
 
-		List<Point> hm = HamiltonianCycle
-				.getApproximateOptimalForCompleteGraph(tempUnDirGraph);
-
+		Point curr = start;
 		ArrayList<Point> hmFromStart = new ArrayList<Point>();
-
-		int startIndex = hm.indexOf(start);
-		for (int i = startIndex; i < hm.size(); i++) {
-			hmFromStart.add(hm.get(i));
+		hmFromStart.add(start);
+		boolean finish = false;
+		int energySpent = 0;
+//		for(Point p: hmFromStart){
+//			System.out.println(p);
+//			System.out.println(">>>>>>>>>>>>>>>>>");
+//		}
+			
+		while(hmFromStart.size() <= nodes.size() && !finish){
+			boolean firstIter = true;
+			int minDistance = 0;
+			Point nearest = null;
+//			System.out.println("Curr"+curr);
+			for(DefaultWeightedEdge edge: tempUnDirGraph.edgesOf(curr)){
+				Point newNode = tempUnDirGraph.getEdgeTarget(edge);
+				int distance = (int) tempUnDirGraph.getEdgeWeight(edge);
+//				System.out.println(newNode);
+				if(!hmFromStart.contains(newNode) && newNode != curr){
+					
+					if(firstIter){
+						firstIter = false;
+						minDistance = distance;
+						nearest = newNode;
+					}
+					else{
+						if(distance < minDistance){
+							minDistance = distance;
+							nearest = newNode;
+						}
+					}
+				}
+			}
+//			System.out.println(">>>>>>>>>>>>>>>>>");
+			if(energySpent + minDistance < energy){
+				hmFromStart.add(nearest);
+				curr = nearest;
+				energySpent += minDistance;
+//				for(Point p: hmFromStart){
+//					System.out.println(p);
+//					System.out.println(">>>>>>>>>>>>>>>>>");
+//				}
+			}
+			else {
+				finish = true;
+			}
 		}
-		for (int i = 0; i <= startIndex; i++) {
-			hmFromStart.add(hm.get(i));
-		}
-
-		return buildPath(hmFromStart);
+		
+		hmFromStart.add(start);
+//		
+//		for(Point p: hmFromStart)
+//			System.out.println(p);
+//		
+		return hmFromStart;
 
 	}
 
@@ -216,21 +215,21 @@ public class TLDObservableCaseResolver {
 	/**
 	 * Transitive closure.
 	 * 
-	 * @param toClose
+	 * @param unDirGraph2
 	 *            the to close
 	 */
 	private void transitiveClosure(
-			SimpleWeightedGraph<Point, DefaultWeightedEdge> toClose) {
+			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> unDirGraph2) {
 
-		for (Point p1 : toClose.vertexSet()) {
-			for (Point p2 : toClose.vertexSet()) {
+		for (Point p1 : unDirGraph2.vertexSet()) {
+			for (Point p2 : unDirGraph2.vertexSet()) {
 				if (p1 != p2) {
 					DijkstraShortestPath<Point, DefaultWeightedEdge> pathfinder = new DijkstraShortestPath<Point, DefaultWeightedEdge>(
-							toClose, p1, p2);
+							unDirGraph2, p1, p2);
 					GraphPath<Point, DefaultWeightedEdge> path = pathfinder
 							.getPath();
-					toClose.addEdge(p1, p2);
-					toClose.setEdgeWeight(toClose.getEdge(p1, p2),
+					unDirGraph2.addEdge(p1, p2);
+					unDirGraph2.setEdgeWeight(unDirGraph2.getEdge(p1, p2),
 							path.getWeight());
 				}
 			}
