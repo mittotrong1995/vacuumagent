@@ -93,11 +93,12 @@ public class TLDAgent extends VAAgent {
 						dirtyNodes.add(new Point(i, j));// dirtyNodes
 				}
 			}
-
 			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> floorDir = TLDConvertToGraph
 					.toGraph(percept.getFloor());
+
 			TLDObservableCaseResolver resolver = new TLDObservableCaseResolver(
 					floorDir);
+
 
 			this.path = resolver.findGoodCycle(percept, currPoint, dirtyNodes,
 					this.energy);
