@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.alg.TransitiveClosure;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -32,21 +33,18 @@ public class TLDObservableCaseResolver {
 			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graph) {
 		super();
 		this.graph = graph;
-//		this.unDirGraph = toUnDirGraph(this.graph);
 		this.transGraph = (SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge>) graph.clone();
 		this.transitiveClosure(transGraph);
 	}
 	
 	public ArrayList<Point> findGoodCycle (VAPercept percept, Point start, ArrayList<Point> dirtyNodes, int energy){
 		
-		ArrayList<Point> goodCycle = this.findCycle(start, dirtyNodes, energy);
 		dirtyNodes.remove(start);
-		
-		if(goodCycle.size() - 2 == dirtyNodes.size()){
+		ArrayList<Point> goodCycle = this.findCycle(start, dirtyNodes, energy);
+		int maxVisited = goodCycle.size() - 2;
+		if(maxVisited == dirtyNodes.size()){
 			return buildPath(goodCycle);
 	    }
-		
-		int maxVisited = goodCycle.size() - 2;
 		int n = dirtyNodes.size();
 		int k =  maxVisited;
 		System.out.println("N:"+n);
@@ -107,20 +105,15 @@ public class TLDObservableCaseResolver {
 		hmFromStart.add(start);
 		boolean finish = false;
 		int energySpent = 0;
-//		for(Point p: hmFromStart){
-//			System.out.println(p);
-//			System.out.println(">>>>>>>>>>>>>>>>>");
-//		}
 			
 		while(hmFromStart.size() <= nodes.size() && !finish){
 			boolean firstIter = true;
 			int minDistance = 0;
 			Point nearest = null;
-//			System.out.println("Curr"+curr);
+			
 			for(DefaultWeightedEdge edge: tempUnDirGraph.edgesOf(curr)){
 				Point newNode = tempUnDirGraph.getEdgeTarget(edge);
 				int distance = (int) tempUnDirGraph.getEdgeWeight(edge);
-//				System.out.println(newNode);
 				if(!hmFromStart.contains(newNode) && newNode != curr){
 					
 					if(firstIter){
@@ -136,15 +129,10 @@ public class TLDObservableCaseResolver {
 					}
 				}
 			}
-//			System.out.println(">>>>>>>>>>>>>>>>>");
-			if(energySpent + minDistance < energy){
+			if(energySpent + minDistance + 1 <= energy){
 				hmFromStart.add(nearest);
 				curr = nearest;
-				energySpent += minDistance;
-//				for(Point p: hmFromStart){
-//					System.out.println(p);
-//					System.out.println(">>>>>>>>>>>>>>>>>");
-//				}
+				energySpent += minDistance + 1;
 			}
 			else {
 				finish = true;
@@ -152,12 +140,7 @@ public class TLDObservableCaseResolver {
 		}
 		
 		hmFromStart.add(start);
-//		
-//		for(Point p: hmFromStart)
-//			System.out.println(p);
-//		
 		return hmFromStart;
-
 	}
 
 	/**
@@ -215,26 +198,26 @@ public class TLDObservableCaseResolver {
 	/**
 	 * Transitive closure.
 	 * 
-	 * @param unDirGraph2
+	 * @param graphToClose
 	 *            the to close
 	 */
 	private void transitiveClosure(
-			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> unDirGraph2) {
+			SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graphToClose) {
 
-		for (Point p1 : unDirGraph2.vertexSet()) {
-			for (Point p2 : unDirGraph2.vertexSet()) {
-				if (p1 != p2) {
-					DijkstraShortestPath<Point, DefaultWeightedEdge> pathfinder = new DijkstraShortestPath<Point, DefaultWeightedEdge>(
-							unDirGraph2, p1, p2);
-					GraphPath<Point, DefaultWeightedEdge> path = pathfinder
-							.getPath();
-					unDirGraph2.addEdge(p1, p2);
-					unDirGraph2.setEdgeWeight(unDirGraph2.getEdge(p1, p2),
-							path.getWeight());
+		for (Point p1 : graphToClose.vertexSet()) {
+			for (Point p2 : graphToClose.vertexSet()) {
+				if (!p1.equals(p2)) {
+					if(!graphToClose.containsEdge(p1, p2)){
+						int weight = DijkstraShortestPath.findPathBetween(graphToClose, p1, p2).size();
+						graphToClose.addEdge(p1, p2);
+						graphToClose.setEdgeWeight(graphToClose.getEdge(p1, p2), weight);
+					}
 				}
 			}
 		}
 
+		
+		System.out.println(graphToClose.getEdgeWeight(graphToClose.getEdge(new Point (0,1), new Point(0,3))));
 	}
 
 	public List<Point> findPath(Point p1, Point p2) {
