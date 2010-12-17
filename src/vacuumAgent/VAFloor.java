@@ -151,17 +151,6 @@ public class VAFloor {
 	
 	public int distanceBetween(Point p1, Point p2){
 		SimpleDirectedWeightedGraph<Point, DefaultWeightedEdge> graph = VAConvertToGraph.toGraph(this);
-		
-//		DepthFirstIterator<Point, DefaultWeightedEdge> iter = new DepthFirstIterator<Point, DefaultWeightedEdge>(
-//				graph);
-//		Point vertex;
-//		while (iter.hasNext()) {
-//			vertex = iter.next();
-//			System.out.println("Vertex " + vertex.toString()
-//					+ " is connected to: "
-//					+ graph.edgesOf(vertex).toString());
-//		}
-
 		return DijkstraShortestPath.findPathBetween(graph, p1, p2).size();
 	}
 	
