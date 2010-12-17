@@ -220,12 +220,13 @@ public abstract class VAEnvironment implements Environment {
 		System.out.println(startPosition);
 		int distanceFromStart = floor.distanceBetween(vacuumAgentPosition, startPosition);
 		System.out.println("distanceFromStart->"+distanceFromStart);
+		System.out.println("steps->"+stepCount);
 		
 		double p1 = Math.pow(clean, 2) / Math.pow(reachable, 2);
 		System.out.println("p1->"+p1);
-		double p2 = (1/reachable) * (Math.log10(distanceFromStart+1) / Math.log10(reachable+1));
+		double p2 = Math.log10(distanceFromStart+1)/10;
 		System.out.println("p2->"+p2);
-		double p3 = (1/reachable) * (Math.log10(stepCount+1) / Math.log10(reachable*10+1));
+		double p3 = Math.log10(stepCount+1)/100;
 		System.out.println("p3->"+p3);
 			
 		return p1/(1+p2+p3);
