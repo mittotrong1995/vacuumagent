@@ -99,8 +99,7 @@ public class TLDAgent extends VAAgent {
 			TLDObservableCaseResolver resolver = new TLDObservableCaseResolver(
 					floorDir);
 
-
-			this.path = resolver.findGoodCycle(percept, currPoint, dirtyNodes,
+			this.path = resolver.findGoodCycle(currPoint, dirtyNodes,
 					this.energy);
 
 			this.firtsStep = false;
