@@ -3,7 +3,6 @@ package main;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -13,11 +12,7 @@ import javax.swing.JOptionPane;
 
 import tildeTeam.TLDAgent;
 import util.constants.Constants;
-import vacuumAgent.VAAction;
 import vacuumAgent.VAAgent;
-import vacuumAgent.VAPercept;
-import vacuumAgent.VAAction.VAActionType;
-import vacuumAgent.VATile.VATileStatus;
 import vacuumAgent.environment.VAEnvObservable;
 import vacuumAgent.environment.VAEnvironment;
 import view.principal.DefineAgentActionListener;
@@ -25,8 +20,6 @@ import view.principal.GenerateMap;
 import view.principal.GenerateRandomlyActionListener;
 import view.principal.OpenFileChooserActionListener;
 import view.principal.PrincipalPanel;
-import framework.Action;
-import framework.Percept;
 
 public class Main extends JFrame{
 
@@ -184,7 +177,7 @@ public class Main extends JFrame{
 	public static void main( String[] args ) {
 		Point point = new Point( 0, 0 );
 		
-		VAAgent a = new TLDAgent(5);
+		VAAgent a = new TLDAgent(100);
 		
 				
 		VAEnvObservable state = new VAEnvObservable( a, point, null );
