@@ -191,7 +191,6 @@ public class TLDObservableCaseResolver {
 				}
 			}
 		}
-
 	}
 
 	public List<Point> findPath(Point p1, Point p2) {
