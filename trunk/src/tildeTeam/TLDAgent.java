@@ -73,9 +73,9 @@ public class TLDAgent extends VAAgent {
 		if (vap.getCurrentTileStatus() == VATileStatus.DIRTY)
 			return new VAAction(VAActionType.SUCK);
 
-		return observableCase(vap);
-		// return semiObservableCase(percept);
-		// return nonObservableCase(vap);
+//		return observableCase(vap);
+//		 return semiObservableCase(percept);
+		 return nonObservableCase(vap);
 
 	}
 
