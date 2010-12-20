@@ -108,20 +108,26 @@ public class TLDObservableCaseResolver {
 			boolean firstIter = true;
 			int minDistance = 0;
 			Point nearest = null;
+//			int minObiettive = 0;
 
 			for (DefaultWeightedEdge edge : tempUnDirGraph.edgesOf(curr)) {
 				Point newNode = tempUnDirGraph.getEdgeTarget(edge);
 				int distance = (int) tempUnDirGraph.getEdgeWeight(edge);
+//				int dirtyAround = dirtyAround(newNode, nodes);
+				
 				if (!hmFromStart.contains(newNode) && newNode != curr) {
 
 					if (firstIter) {
 						firstIter = false;
 						minDistance = distance;
 						nearest = newNode;
+//						minObiettive = distance - dirtyAround;
 					} else {
+//						if (distance - dirtyAround < minObiettive) {
 						if (distance < minDistance) {
 							minDistance = distance;
 							nearest = newNode;
+//							minObiettive = distance - dirtyAround;
 						}
 					}
 				}
@@ -137,6 +143,16 @@ public class TLDObservableCaseResolver {
 
 		hmFromStart.add(start);
 		return hmFromStart;
+	}
+	
+	private int dirtyAround(Point node, ArrayList<Point> dirtyNodes){
+		int count = 0;
+		for(Point p: dirtyNodes){
+			if(Math.abs(p.x - node.x) +  Math.abs(p.y - node.y) == 1){
+				count++;
+			}
+		}
+		return count;
 	}
 
 	/**
@@ -192,6 +208,8 @@ public class TLDObservableCaseResolver {
 			}
 		}
 	}
+	
+
 
 	public List<Point> findPath(Point p1, Point p2) {
 		List<DefaultWeightedEdge> edgeList = DijkstraShortestPath
