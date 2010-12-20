@@ -127,6 +127,10 @@ public class TLDAgent extends VAAgent {
 			firtsStep = false;
 
 		}
+		
+		innerWorld.updateWorld(innerWorldPosition, percept.getNeighborhood());
+		if(!history.contains(innerWorldPosition))
+			history.add(innerWorldPosition);
 
 		if (!this.path.isEmpty()) {
 
@@ -137,22 +141,20 @@ public class TLDAgent extends VAAgent {
 			Point nextPoint = path.remove(0);
 			System.out.println("NextPoint" + nextPoint);
 			System.out.println("<___________>");
-			Point prePoint = innerWorldPosition;
+			Point precPoint = innerWorldPosition;
 			innerWorldPosition = nextPoint;
-			return moveAgent(prePoint, nextPoint);
+			return moveAgent(precPoint, nextPoint);
 		}
 
-		if (history.isEmpty()) {
-			System.out.println("!!!!energia rimasta:" + energy);
-			this.die();
-			return new VAAction(VAActionType.NOOP);
-		}
+//		if (history.isEmpty()) {
+//			System.out.println("!!!!energia rimasta:" + energy);
+//			this.die();
+//			return new VAAction(VAActionType.NOOP);
+//		}
 
-		innerWorldPosition = history.get(history.size() - 1);
+//		innerWorldPosition = history.get(history.size() - 1);
 
 		VANeighborhood neighborhood = percept.getNeighborhood();
-
-		innerWorld.updateWorld(innerWorldPosition, percept.getNeighborhood());
 
 		ArrayList<Point> freeStage = new ArrayList<Point>();
 
@@ -185,46 +187,49 @@ public class TLDAgent extends VAAgent {
 		}
 
 		Point nextPoint;
-
-		if (freeStage.isEmpty()) {
-			if (innerWorldPosition.x == 0 && innerWorldPosition.y == 0) {
+		
+		
+		if(!freeStage.isEmpty()){
+			System.out.println("Current Position" + innerWorldPosition);
+			nextPoint = freeStage.get(0);
+			System.out.println("NextPoint" + nextPoint);
+			Point precPoint = innerWorldPosition;
+			innerWorldPosition = nextPoint;
+			return moveAgent(precPoint, nextPoint);
+		}
+		
+		
+		
+		boolean firstFinded = false;
+		ArrayList<Point> minPath = new ArrayList<Point>();
+		
+		for(Point p: history){
+			if(!innerWorld.deadEnd(p) && !p.equals(innerWorldPosition)){
+				if(!firstFinded){
+					minPath = innerWorld.findPath(innerWorldPosition, p);
+					firstFinded = true;
+				}
+				else {
+					ArrayList<Point> tempPath = innerWorld.findPath(innerWorldPosition, p);
+					if(tempPath.size() < minPath.size()){
+						minPath = tempPath;
+					}
+				}
+			}
+		}
+		
+		if(firstFinded == false || minPath.size() + 2 > this.getEnergy()){
+			if(innerWorld.equals(new Point(0,0))){
 				this.die();
 				return new VAAction(VAActionType.NOOP);
 			}
-
-			history.remove(history.size() - 1);
-			while (innerWorld.deadEnd(history.get(history.size() - 1))
-					&& !history.get(history.size() - 1).equals(new Point(0, 0))) {
-				history.remove(history.get(history.size() - 1));
-			}
-			nextPoint = history.get(history.size() - 1);
-			ArrayList<Point> pathFinded = innerWorld.findPath(
-					innerWorldPosition, nextPoint);
-
-			if (energy < pathFinded.size() + 2) {
-				pathFinded = innerWorld.findPath(innerWorldPosition, new Point(
-						0, 0));
-				history.clear();
-			}
-
-			this.path.addAll(pathFinded);
-			for (Point p : this.path) {
-				System.out.println(p);
-			}
-			nextPoint = this.path.remove(0);
-			System.out.println("NextPoint" + nextPoint);
-			System.out.println("<___________>");
-
-		} else {
-			System.out.println("Current Position" + innerWorldPosition);
-			nextPoint = freeStage.get(0);
-			history.add(nextPoint);
-			System.out.println("NextPoint" + nextPoint);
+			minPath = innerWorld.findPath(innerWorldPosition, new Point(0,0));
 		}
+		
 
-		Point prePoint = innerWorldPosition;
-		innerWorldPosition = nextPoint;
-		return moveAgent(prePoint, nextPoint);
+		
+		this.path = minPath;
+		return new VAAction(VAActionType.NOOP);
 	}
 
 	private VAAction moveAgent(Point currentPosition, Point nextPoint) {
