@@ -146,13 +146,6 @@ public class TLDAgent extends VAAgent {
 			return moveAgent(precPoint, nextPoint);
 		}
 
-//		if (history.isEmpty()) {
-//			System.out.println("!!!!energia rimasta:" + energy);
-//			this.die();
-//			return new VAAction(VAActionType.NOOP);
-//		}
-
-//		innerWorldPosition = history.get(history.size() - 1);
 
 		VANeighborhood neighborhood = percept.getNeighborhood();
 
@@ -190,7 +183,7 @@ public class TLDAgent extends VAAgent {
 		
 		
 		if(!freeStage.isEmpty()){
-			System.out.println("Current Position" + innerWorldPosition);
+			System.out.println("FreStageCurrent Position" + innerWorldPosition);
 			nextPoint = freeStage.get(0);
 			System.out.println("NextPoint" + nextPoint);
 			Point precPoint = innerWorldPosition;

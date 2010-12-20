@@ -51,7 +51,9 @@ public class TLDInnerWorld {
 	 * @param t the t
 	 * @param a the a
 	 */
-	public void setTile( Point t , VATileStatus a) {		
+	public void setTile( Point t , VATileStatus a) {
+		if(floor.containsKey(t))
+			floor.remove(t);
 		floor.put(t,a); 
 	}
 	
@@ -77,10 +79,10 @@ public class TLDInnerWorld {
 	public boolean deadEnd (Point p){
 		int x =p.x;
 		int y =p.y;
-		if(this.getTile(new Point(x+1,y))== VATileStatus.UNDEFINED) return false;
-		if(this.getTile(new Point(x-1,y))== VATileStatus.UNDEFINED) return false;
-		if(this.getTile(new Point(x,y-1))== VATileStatus.UNDEFINED) return false;
-		if(this.getTile(new Point(x,y+1))== VATileStatus.UNDEFINED) return false;
+		if(this.getTile(new Point(x+1,y)) == VATileStatus.UNDEFINED || this.getTile(new Point(x+1,y)) == VATileStatus.DIRTY) return false;
+		if(this.getTile(new Point(x-1,y)) == VATileStatus.UNDEFINED || this.getTile(new Point(x-1,y)) == VATileStatus.DIRTY) return false;
+		if(this.getTile(new Point(x,y-1)) == VATileStatus.UNDEFINED || this.getTile(new Point(x,y-1)) == VATileStatus.DIRTY) return false;
+		if(this.getTile(new Point(x,y+1)) == VATileStatus.UNDEFINED || this.getTile(new Point(x,y+1)) == VATileStatus.DIRTY) return false;
 		return true;
 	}
 	
@@ -91,32 +93,47 @@ public class TLDInnerWorld {
 	 * @return true, if successful
 	 */
 	public boolean visited (Point p){
-		if (this.getTile(p) == VATileStatus.UNDEFINED) return false;
+		if (this.getTile(p) == VATileStatus.UNDEFINED || this.getTile(p) == VATileStatus.DIRTY) return false;
 		return true;
 	}
 	
 	public void updateWorld ( Point currentPosition, VANeighborhood neighborhood){
-		floor.put(currentPosition, VATileStatus.CLEAN);
+		this.setTile(currentPosition, VATileStatus.CLEAN);
 		
-		
+		Point point = new Point(currentPosition.x+1, currentPosition.y);
 		if(!neighborhood.northIsFree()){
-			Point point = new Point(currentPosition.x+1, currentPosition.y);
-			floor.put(point, VATileStatus.BLOCK);
+			this.setTile(point, VATileStatus.BLOCK);
+		}
+		else{
+			if(getTile(point) == VATileStatus.UNDEFINED)
+				this.setTile(point, VATileStatus.DIRTY);
 		}
 		
+		point = new Point(currentPosition.x-1, currentPosition.y);
 		if(!neighborhood.southIsFree()){
-			Point point = new Point(currentPosition.x-1, currentPosition.y);
-			floor.put(point, VATileStatus.BLOCK);
+			this.setTile(point, VATileStatus.BLOCK);
+		}
+		else{
+			if(getTile(point) == VATileStatus.UNDEFINED)
+				this.setTile(point, VATileStatus.DIRTY);
 		}
 		
+		point = new Point(currentPosition.x, currentPosition.y+1);
 		if(!neighborhood.eastIsFree()){
-			Point point = new Point(currentPosition.x, currentPosition.y+1);
-			floor.put(point, VATileStatus.BLOCK);
+			this.setTile(point, VATileStatus.BLOCK);
+		}
+		else{
+			if(getTile(point) == VATileStatus.UNDEFINED)
+				this.setTile(point, VATileStatus.DIRTY);
 		}
 		
+		point = new Point(currentPosition.x, currentPosition.y-1);
 		if(!neighborhood.westIsFree()){
-			Point point = new Point(currentPosition.x, currentPosition.y-1);
-			floor.put(point, VATileStatus.BLOCK);
+			this.setTile(point, VATileStatus.BLOCK);
+		}
+		else{
+			if(getTile(point) == VATileStatus.UNDEFINED)
+				this.setTile(point, VATileStatus.DIRTY);
 		}
 	}
 	
