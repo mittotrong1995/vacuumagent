@@ -1,4 +1,4 @@
-package tildeTeam;
+package main.tildeTeam;
 
 import java.awt.Point;
 
