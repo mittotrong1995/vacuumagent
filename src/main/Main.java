@@ -43,6 +43,7 @@ public class Main extends JFrame{
 	JMenuItem moveOneStep = new JMenuItem( Constants.MOVEONESTEP );
 	JMenuItem help = new JMenuItem( Constants.HELP );
 	
+	
 	VAEnvironment environment;
 	
 	public Main( VAEnvironment environment ) {
@@ -179,6 +180,8 @@ public class Main extends JFrame{
 	 */
 	public static void main( String[] args ) {
 		Point point = new Point( 0, 0 );
+		
+		
 		
 		VAAgent a = new VAAgent(500) {
 			@Override
