@@ -4,5 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="commons-io-2.0.jar"/>
 	<classpathentry kind="lib" path="jgrapht-jdk1.6.jar"/>
+	<classpathentry kind="lib" path="src/commons-io-2.0.jar"/>
+	<classpathentry kind="lib" path="src/jgrapht-jdk1.6.jar"/>
+	<classpathentry kind="lib" path="src/junit-4.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
