@@ -44,6 +44,8 @@ public class Main extends JFrame{
 	JMenuItem help = new JMenuItem( Constants.HELP );
 	
 	
+	
+	
 	VAEnvironment environment;
 	
 	public Main( VAEnvironment environment ) {
