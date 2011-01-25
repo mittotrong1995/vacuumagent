@@ -189,8 +189,12 @@ public class Main extends JFrame{
 		Point point = new Point( 0, 0 );
 		
 		
+//		VAAgent a = new TLDAgentObservableCase(75);
+//		VAAgent a = new TLDAgentNonObservable(75);
 		
-		VAAgent a = new TLDAgentNonObservable(100);
+		VAAgent a = new TLDAgentObservableCase(150);
+//		VAAgent a = new TLDAgentNonObservable(150);
+		
 		
 				
 		VAEnvObservable state = new VAEnvObservable( a, point, null );
